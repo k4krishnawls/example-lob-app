@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+jest.config.js
+wallaby.js
+tsconfig.json
+.eslintrc.js
+*.html
