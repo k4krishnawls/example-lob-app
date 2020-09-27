@@ -6,9 +6,12 @@ using CorrelationId;
 using CorrelationId.DependencyInjection;
 using ELA.App.ErrorHandling;
 using ELA.App.HealthChecks;
+using ELA.App.Security;
 using ELA.App.StartupConfiguration;
 using ELA.Business.Authentication;
 using ELA.Common.Authentication;
+using ELA.Common.Persistence;
+using ELA.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -38,6 +41,18 @@ namespace ELA.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Configurations
+            services.AddScoped<DatabaseConnectionSettings>((services) => {
+                return new DatabaseConnectionSettings() { Database = _configuration.GetConnectionString("Database") };
+            });
+
+            // Data
+            services.AddScoped<IPersistence, DapperPersistence>();
+
+            // Business/Domain Logic
+            BusinessServiceConfiguration.Configure(services);
+
+
             // interactive security
             services.AddAntiforgery();
             services.AddAuthentication(SecurityConstants.CookieAuthScheme)
@@ -62,16 +77,16 @@ namespace ELA.App
                 // Authorizations policies
                 services.AddAuthorization(options =>
                 {
-                    options.AddPolicy(SecurityConstants.Policy_InteractiveUserAccess, builder =>
+                    options.AddPolicy(Policies.InteractiveUserAccess, builder =>
                     {
                         builder.RequireAuthenticatedUser();
                         builder.AuthenticationSchemes.Add(SecurityConstants.CookieAuthScheme);
-                        builder.RequireClaim(SecurityConstants.Claim_SessionId);
-                        builder.RequireClaim(SecurityConstants.Claim_UserId);
-                        builder.RequireClaim(SecurityConstants.Claim_UserName);
+                        builder.RequireClaim(ClaimNames.SessionId);
+                        builder.RequireClaim(ClaimNames.UserId);
+                        builder.RequireClaim(ClaimNames.UserName);
                     });
 
-                    options.DefaultPolicy = options.GetPolicy(SecurityConstants.Policy_InteractiveUserAccess);
+                    options.DefaultPolicy = options.GetPolicy(Policies.InteractiveUserAccess);
                 });
 
                 // CORS policies
@@ -116,6 +131,14 @@ namespace ELA.App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // -- Development tasks
+            if (env.IsDevelopment())
+            {
+                LocalDevelopmentTasks.MigrateDatabase(_configuration);
+            }
+
+            // -- Continue configuration
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -16,11 +16,12 @@
         "./*"
       ]
     },
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/@testing-library/react"
+    ],
     "jsx": "react"
   },
-  "typeRoots": [
-    "node_modules/@types"
-  ],
   "include": [
     "src/**/*"
   ],

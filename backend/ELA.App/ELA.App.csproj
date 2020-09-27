@@ -8,7 +8,6 @@
   <ItemGroup>
     <Folder Include="Controllers\Account\" />
     <Folder Include="Controllers\Error\Views\" />
-    <Folder Include="Controllers\Frontend\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +17,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ELA.Business\ELA.Business.csproj" />
     <ProjectReference Include="..\ELA.Common\ELA.Common.csproj" />
+    <ProjectReference Include="..\ELA.Persistence\ELA.Persistence.csproj" />
+    <ProjectReference Include="..\ELA.Tools.DatabaseMigration\ELA.Tools.DatabaseMigration.csproj" />
   </ItemGroup>
 
 

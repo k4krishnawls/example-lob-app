@@ -1,4 +1,5 @@
 ﻿using ELA.App.Controllers.Account.Models;
+using ELA.App.Security;
 using ELA.App.StartupConfiguration;
 using ELA.Common.Authentication;
 using Microsoft.AspNetCore.Authentication;
@@ -57,9 +58,9 @@ namespace ELA.App.Controllers.Account
             }
 
             var identity = new ClaimsIdentity(new List<Claim>() {
-                new Claim(SecurityConstants.Claim_SessionId, result.SessionId.ToString()),
-                new Claim(SecurityConstants.Claim_UserId, result.UserId.ToString()),
-                new Claim(SecurityConstants.Claim_UserName, result.UserName)
+                new Claim(ClaimNames.SessionId, result.SessionId.ToString()),
+                new Claim(ClaimNames.UserId, result.UserId.ToString()),
+                new Claim(ClaimNames.UserName, result.UserName)
             }, SecurityConstants.CookieAuthScheme);
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(SecurityConstants.CookieAuthScheme, principal);
