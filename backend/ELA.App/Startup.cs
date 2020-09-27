@@ -52,7 +52,6 @@ namespace ELA.App
             // Business/Domain Logic
             BusinessServiceConfiguration.Configure(services);
 
-
             // interactive security
             services.AddAntiforgery();
             services.AddAuthentication(SecurityConstants.CookieAuthScheme)
@@ -104,7 +103,8 @@ namespace ELA.App
                 services.AddDefaultCorrelationId();
 
                 // Health
-                services.AddHealthChecks();
+                services.AddHealthChecks()
+                    .AddCheck<DatabaseHealthCheck>("database");
 
                 // MVC 
                 services.AddControllersWithViews(options => {
