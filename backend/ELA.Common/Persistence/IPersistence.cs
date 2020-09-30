@@ -8,5 +8,6 @@ namespace ELA.Common.Persistence
     public interface IPersistence
     {
         ICustomerRepository Customers { get; }
+        IUserRepository Users { get; }
     }
 }

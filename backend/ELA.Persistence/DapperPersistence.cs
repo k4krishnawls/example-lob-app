@@ -21,9 +21,12 @@ namespace ELA.Persistence
             PatchDapper();
 
             Customers = new CustomerRepository(_settings.Database);
+            Users = new UserRepository(_settings.Database);
         }
 
         public ICustomerRepository Customers { get; }
+
+        public IUserRepository Users { get; }
 
         public static void PatchDapper()
         {

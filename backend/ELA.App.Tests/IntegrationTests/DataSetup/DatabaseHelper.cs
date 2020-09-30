@@ -20,9 +20,11 @@ namespace ELA.App.Tests.IntegrationTests.DataSetup
             DapperPersistence.PatchDapper();
 
             Customers = new Customers(this);
+            Users = new Users(this);
         }
 
         public Customers Customers { get; }
+        public Users Users { get; }
 
         public string GetConnectionString()
         {

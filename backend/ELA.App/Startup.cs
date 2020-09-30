@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CorrelationId;
@@ -21,9 +22,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 
 namespace ELA.App
 {
@@ -68,7 +71,7 @@ namespace ELA.App
                 // Cookie policies
                 services.Configure<CookiePolicyOptions>(options =>
                 {
-                    options.MinimumSameSitePolicy = SameSiteMode.Strict;
+                    options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
                     options.HttpOnly = HttpOnlyPolicy.None;
                     options.Secure = CookieSecurePolicy.Always;
                 });
@@ -121,10 +124,10 @@ namespace ELA.App
                 });
 
                 // SPA
-                //services.AddSpaStaticFiles(configuration =>
-                //{
-                //    configuration.RootPath = "ClientApp/build";
-                //});
+                services.AddSpaStaticFiles(configuration =>
+                {
+                    configuration.RootPath = "ClientApp/dist";
+                });
             }
         }
 
@@ -186,54 +189,56 @@ namespace ELA.App
                     }
                 });
 
-                //app.UseSpaStaticFiles(new StaticFileOptions()
-                //{
-                //    OnPrepareResponse = ctx =>
-                //    {
-                //        if (ctx.Context.Request.Path.StartsWithSegments("/static"))
-                //        {
-                //            // Cache all static resources for 1 year (versioned filenames)
-                //            var headers = ctx.Context.Response.GetTypedHeaders();
-                //            headers.CacheControl = new CacheControlHeaderValue
-                //            {
-                //                Public = true,
-                //                MaxAge = TimeSpan.FromDays(365)
-                //            };
-                //        }
-                //        else
-                //        {
-                //            // Do not cache explicit `/index.html` or any other files.  See also: `DefaultPageStaticFileOptions` below for implicit "/index.html"
-                //            var headers = ctx.Context.Response.GetTypedHeaders();
-                //            headers.CacheControl = new CacheControlHeaderValue
-                //            {
-                //                Public = true,
-                //                MaxAge = TimeSpan.FromDays(0)
-                //            };
-                //        }
-                //    }
-                //});
-                //app.UseSpa(spa =>
-                //{
-                //    spa.Options.SourcePath = "ClientApp";
-                //    spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
-                //    {
-                //        OnPrepareResponse = ctx =>
-                //        {
-                //            // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                //            var headers = ctx.Context.Response.GetTypedHeaders();
-                //            headers.CacheControl = new CacheControlHeaderValue
-                //            {
-                //                Public = true,
-                //                MaxAge = TimeSpan.FromDays(0)
-                //            };
-                //        }
-                //    };
+                app.UseSpaStaticFiles(new StaticFileOptions()
+                {
+                    OnPrepareResponse = ctx =>
+                    {
+                        if (ctx.Context.Request.Path.StartsWithSegments("/static"))
+                        {
+                            // Cache all static resources for 1 year (versioned filenames)
+                            var headers = ctx.Context.Response.GetTypedHeaders();
+                            headers.CacheControl = new CacheControlHeaderValue
+                            {
+                                Public = true,
+                                MaxAge = TimeSpan.FromDays(365)
+                            };
+                        }
+                        else
+                        {
+                            // Do not cache explicit `/index.html` or any other files.  See also: `DefaultPageStaticFileOptions` below for implicit "/index.html"
+                            var headers = ctx.Context.Response.GetTypedHeaders();
+                            headers.CacheControl = new CacheControlHeaderValue
+                            {
+                                Public = true,
+                                MaxAge = TimeSpan.FromDays(0)
+                            };
+                        }
+                    }
+                });
+                app.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "ClientApp/dist";
+                    spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions()
+                    {
+                        OnPrepareResponse = ctx =>
+                        {
+                            // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
+                            var headers = ctx.Context.Response.GetTypedHeaders();
+                            headers.CacheControl = new CacheControlHeaderValue
+                            {
+                                Public = true,
+                                MaxAge = TimeSpan.FromDays(0)
+                            };
+                        }
+                    };
 
-                //    if (env.IsDevelopment())
-                //    {
-                //        spa.UseReactDevelopmentServer(npmScript: "start");
-                //    }
-                //});
+                    if (env.IsDevelopment())
+                    {
+                        LocalDevelopmentTasks.StartParcelServer(3333, "../../frontend/react-parcel-ts");
+                        spa.Options.StartupTimeout = TimeSpan.FromMinutes(1);
+                        spa.UseProxyToSpaDevelopmentServer("http://127.0.0.1:3333");
+                    }
+                });
             }
         }
     }
