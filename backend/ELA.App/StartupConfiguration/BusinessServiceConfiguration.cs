@@ -13,6 +13,7 @@ namespace ELA.App.StartupConfiguration
         public static void Configure(IServiceCollection services)
         {
             services.AddScoped<IInteractiveUserQueryService, InteractiveUserQueryService>();
+            services.AddScoped<IUserManagementService, UserManagementService>();
         }
     }
 }

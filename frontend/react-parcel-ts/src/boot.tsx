@@ -3,6 +3,8 @@ import { render } from 'react-dom';
 import { hot } from 'react-hot-loader';
 import { App } from './app/App';
 
+import "./index.scss";
+
 const HotApp = hot(module)(App);
 
 render(

@@ -6,6 +6,7 @@
     "rootDir": "./src",
     "incremental": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "lib": [
       "dom",
       "es2015"

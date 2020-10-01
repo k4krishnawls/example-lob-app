@@ -150,8 +150,9 @@ namespace ELA.App
             {
                 app.UseExceptionHandler("/error");
                 app.UseHsts();
+                // use HTTP locally to support HMR w/ parcel
+                app.UseHttpsRedirection();
             }
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();

@@ -1,0 +1,77 @@
+$blue: #3cc3b2;
+$grey: #61737b;
+$green: #73c167;
+$yellow: #fbb040;
+
+$header-bg: #DDD;
+$header-height: 28px;
+$menu-bg: #222244;
+$menu-item-bg: #222244;
+$menu-item-fg: #ffffff;
+$menu-item-hover-bg: #333366;
+$menu-item-hover-fg: #ffffff;
+$border-color: #DDD;
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.app-body {
+  display: grid;
+  grid-template-columns:  [start] 200px [content-start] auto [end];
+  grid-template-rows:  [top] $header-height [content-top] auto [bottom];
+  height: 100vh;
+  width: 100vw;
+  overflow: auto;
+}
+
+.app-header{
+  line-height: $header-height;
+  background-color: $header-bg;
+  color: #ffffff;
+}
+
+.app-menu {
+  grid-column-start: start;
+  grid-column-end: content-start;
+  grid-row-start: top;
+  grid-row-end: content-start;
+  background-color: $menu-bg;
+  padding-top: $header-height;
+
+  & > ul {
+    list-style: none outside none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.app-menu-item {
+  display: block;
+  padding: .5rem 1rem;
+  margin: .25rem 0;
+  color: $menu-item-fg;
+  background-color: $menu-item-bg;
+
+   &:hover {
+     text-decoration: none;
+     color: $menu-item-hover-fg;
+     background-color: $menu-item-hover-bg;
+   }
+}
+
+.app-content {
+  grid-column-start: content-start;
+  grid-column-end: end;
+  grid-row-start: content-top;
+  grid-row-end: bottom;
+  padding: 0.25rem;
+}
+
+.app-section {
+  margin: 1rem;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  padding: 1rem;
+}

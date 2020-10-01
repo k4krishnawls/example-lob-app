@@ -35,12 +35,13 @@ namespace ELA.App.StartupConfiguration
                 Arguments = completeArguments,
                 UseShellExecute = false,
                 RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
+                RedirectStandardOutput = false,
+                RedirectStandardError = false,
                 WorkingDirectory = workingDirectory
             };
             var process = Process.Start(processStartInfo);
             process.EnableRaisingEvents = true;
+            
         }
     }
 }
