@@ -12,6 +12,7 @@ namespace ELA.App.Tests.IntegrationTests.DataSetup
 {
     public class DatabaseHelper
     {
+        public const int ADMINUSERID = -1;
         private readonly string _connectionString;
 
         public DatabaseHelper(string connectionString)

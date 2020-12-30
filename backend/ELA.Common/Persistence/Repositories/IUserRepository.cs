@@ -10,5 +10,7 @@ namespace ELA.Common.Persistence.Repositories
     {
         Task<List<UserDTO>> GetAllAsync();
         Task<UserDTO> GetByIdAsync(int id);
+        Task<int> CreateUserAsync(UserDTO newUser);
+        Task SaveUserAsync(UserDTO user);
     }
 }

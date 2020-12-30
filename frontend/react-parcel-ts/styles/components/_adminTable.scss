@@ -1,0 +1,50 @@
+@import "../variables";
+
+.admin-table {
+  border-spacing: 0;
+
+  & > thead > tr > th,
+  & > tbody > tr > td,
+  & > tfoot > tr > td {
+    line-height: $line-height-base;
+    padding: $space-xs $space-m;
+  }
+
+  & > thead > tr > th,
+  & > tbody > tr > td {
+    border-bottom: 1px solid $border-color;
+  }
+
+  & > thead > tr {
+    color: $text-color-inverse;
+
+    & > th {
+      background-color: $sec-blue;
+      font-weight: normal;
+      font-size: 80%;
+    }
+
+    & > th:first-child{
+      border-top-left-radius: 4px;
+    }
+
+    & > th:last-child{
+      border-top-right-radius: 4px;
+    }
+  }
+
+  & > tfoot > tr > td {
+    border-bottom: 1px solid $grey-lt;
+
+    &:first-child{
+      border-bottom-left-radius: 4px;
+    }
+    &:last-child{
+      border-bottom-right-radius: 4px;
+    }
+  }
+
+  & > tbody > tr:nth-child(2n+1){
+    background-color: $grey-lt;
+  }
+}

@@ -1,0 +1,22 @@
+@import "../variables";
+
+.gdb-form-error{
+  display: block;
+  padding: $space-m;
+  margin: $space-m 0;
+  color: $sec-pink-dark;
+  background-color: $sec-pink-light;
+  border: 2px solid $sec-pink;
+  border-radius: 8px;
+}
+
+.gdb-form-error-fields {
+  & > dt {
+    display: block;
+    margin: $space-m 0 0 $space-s;
+  }
+  & > dd {
+    display: block;
+    margin: $space-xs 0 0 2rem;
+  }
+}

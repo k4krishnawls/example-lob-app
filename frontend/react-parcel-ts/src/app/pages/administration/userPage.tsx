@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { AnimateOnChange } from 'react-animation';
 import { Button } from '~app/components/button';
 import { ButtonGroup } from '~app/components/buttonGroup';
+import { BadRequestType, parseBadRequestResponse } from '~app/utilities/badRequest';
 import { Section } from "../../components/section";
 import {
   User,
@@ -20,6 +22,9 @@ interface IState {
   id: "new" | number;
   user: Loadable<User>;
   saveStatus: "none" | "saving" | "saved";
+  saveCompleteTimeout?: any;
+  saveError?: string;
+  saveFieldErrors?: { field: string, errors: string[] }[];
 }
 
 export class UserPage extends React.Component<IProps, IState>{
@@ -82,10 +87,12 @@ export class UserPage extends React.Component<IProps, IState>{
   }
 
   async saveUser() {
-    const { user } = this.state;
+    const { user, saveCompleteTimeout } = this.state;
     if (!user.data) return;
 
-    this.setState({ saveStatus: "saving" });
+    if (saveCompleteTimeout) clearTimeout(saveCompleteTimeout);
+    this.setState({ saveStatus: "saving", saveError: undefined, saveFieldErrors: undefined, saveCompleteTimeout: undefined });
+
     if (this.state.id == "new") {
       const response = await fetch(`/api/fe/users`, {
         method: "POST",
@@ -94,18 +101,19 @@ export class UserPage extends React.Component<IProps, IState>{
           username: user.data.username
         }),
         headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
+          'Content-Type': 'application/json;charset=utf-8'
+        },
       });
       if (response.ok) {
         const json = await response.json();
         this.setState({
           saveStatus: "saved",
-          id: json.id
+          id: json.id,
+          saveCompleteTimeout: setTimeout(() => this.saveComplete(), 2000)
         });
       }
       else {
-        // todo: error handling
+        await this.processSaveErrors(response);
       }
     }
     else {
@@ -116,16 +124,41 @@ export class UserPage extends React.Component<IProps, IState>{
           username: user.data.username
         }),
         headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
+          'Content-Type': 'application/json;charset=utf-8'
+        },
       });
       if (response.ok) {
-        this.setState({ saveStatus: "saved" });
+        this.setState({
+          saveStatus: "saved",
+          saveCompleteTimeout: setTimeout(() => this.saveComplete(), 2000)
+        });
       }
       else {
-        // todo: error handling
+        await this.processSaveErrors(response);
       }
+    }
+  }
 
+  saveComplete() {
+    if (this.state.saveStatus === "saved") {
+      this.setState({
+        saveStatus: "none"
+      });
+    }
+  }
+
+  async processSaveErrors(response: Response) {
+    if (response.status == 400) {
+      const error = await parseBadRequestResponse(response);
+      if (error.errorType == BadRequestType.GeneralError) {
+        this.setState({ saveError: error.generalError, saveStatus: "none" });
+      }
+      else {
+        this.setState({ saveError: error.generalError, saveFieldErrors: error.fieldErrors, saveStatus: "none" });
+      }
+    }
+    else {
+      this.setState({ saveError: "An error occurred while saving, please try again or contact support if it continues." });
     }
   }
 
@@ -142,7 +175,8 @@ export class UserPage extends React.Component<IProps, IState>{
 
       return (
         <Section>
-          <h1>User: {user.name}</h1>
+          <h1>User: {user.name}{this.renderSaveStatus()}</h1>
+          {this.renderErrors()}
           <label>
             <span>Name:</span>
             <input type="text" value={user.name} onChange={(v) => this.updateUser({ name: v.target.value })} />
@@ -161,6 +195,40 @@ export class UserPage extends React.Component<IProps, IState>{
         </Section>
       );
     }
+  }
+
+  private renderSaveStatus() {
+    switch (this.state.saveStatus) {
+      case "saving":
+        return <div className="gdb-save-status">Saving...</div>;
+      case "saved":
+        return <AnimateOnChange><div className="gdb-save-status">Saved</div></AnimateOnChange>;
+      case "none":
+      default:
+        return null;
+    }
+  }
+
+  private renderErrors() {
+    const { saveError, saveFieldErrors } = this.state;
+    if (!saveError && !saveFieldErrors) return;
+    return (
+      <div className="gdb-form-error">
+        {!saveError ? null :
+          <div className="gdb-form-error-message">{saveError}</div>
+        }
+        {!saveFieldErrors ? null :
+          <dl className="gdb-form-error-fields">
+            {saveFieldErrors.map(f => (
+              <>
+                <dt>{f.field}</dt>
+                <dd>{f.errors.join(", ")}</dd>
+              </>
+            ))}
+          </dl>
+        }
+      </div>
+    );
   }
 
   public updateUser(change: any) {

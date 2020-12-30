@@ -9,7 +9,7 @@ export const AdministrationPage: React.SFC = () => {
     return rd.map((ru: any) => ({
       id: ru.id,
       username: ru.username,
-      name: ru.user,
+      name: ru.name,
       userType: ru.userType,
       createdOn: new Date(ru.createdOn)
     }));
@@ -18,7 +18,7 @@ export const AdministrationPage: React.SFC = () => {
   return (
     <Section>
       <h1>Users</h1>
-      <table>
+      <table className="admin-table">
         <thead>
           <tr>
             <th>Id</th>

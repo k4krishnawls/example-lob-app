@@ -1,0 +1,9 @@
+@import "../variables";
+
+.gdb-save-status {
+  display: inline-block;
+  font-size: $font-size-normal;
+  margin-left: $space-xl;
+  font-weight: normal;
+  text-decoration: none;
+}

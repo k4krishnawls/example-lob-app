@@ -1,4 +1,5 @@
-﻿using ELA.Common.DTOs.User;
+﻿using ELA.Common.Authorization;
+using ELA.Common.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,5 +11,7 @@ namespace ELA.Common.BusinessLogic
     {
         Task<List<UserDTO>> GetAllUsersAsync();
         Task<UserDTO> GetUserAsync(int id);
+        Task<int> CreateUserAsync(UserCreateDTO createUser, IAuthContext authContext);
+        Task UpdateUserAsync(UserUpdateDTO update, IAuthContext authContext);
     }
 }

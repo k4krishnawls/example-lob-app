@@ -1,0 +1,1 @@
+ALTER TABLE dbo.[User] ADD CONSTRAINT AK_UserName UNIQUE(UserName);
