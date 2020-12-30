@@ -1,0 +1,7 @@
+@import "../variables";
+
+.app-section {
+  & > h1 {
+    color: $grey-med;
+  }
+}

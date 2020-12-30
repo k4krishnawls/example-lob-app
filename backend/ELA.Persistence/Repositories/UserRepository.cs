@@ -29,5 +29,23 @@ namespace ELA.Persistence.Repositories
                 return (await conn.QueryAsync<UserDTO>(sql)).ToList();
             }
         }
+
+        public async Task<UserDTO> GetByIdAsync(int id)
+        {
+            var param = new { id };
+            var sql = @"
+                SELECT Id, 
+                        Username, 
+                        [Name], 
+                        UserType = UserTypeId,
+                        CreatedOn
+                FROM dbo.[User]
+                WHERE Id = @Id;
+            ";
+            using (var conn = GetConnection())
+            {
+                return await conn.QuerySingleOrDefaultAsync<UserDTO>(sql, param);
+            }
+        }
     }
 }

@@ -23,5 +23,12 @@ namespace ELA.Business.BusinessLogic
                 return await _persistence.Users.GetAllAsync();
             });
         }
+
+        public async Task<UserDTO> GetUserAsync(int id)
+        {
+            return await BusinessQuery(async () => {
+                return await _persistence.Users.GetByIdAsync(id);
+            });
+        }
     }
 }

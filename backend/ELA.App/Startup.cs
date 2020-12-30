@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
+using ELA.App.Controllers.General.Utility;
 using ELA.App.ErrorHandling;
 using ELA.App.HealthChecks;
 using ELA.App.Security;
@@ -22,6 +23,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +66,9 @@ namespace ELA.App
                     options.AccessDeniedPath = "/account/accessdenied";
                     options.LogoutPath = "/account/logout";
                 });
+            services.AddScoped<IAccountCookies, AccountCookies>();
             services.AddScoped<ISignInManager, SignInManager>();
+            // TODO: configure Data Protection
 
             // Policies
             {
@@ -113,6 +117,7 @@ namespace ELA.App
                 services.AddControllersWithViews(options => {
                     options.Filters.Add(new UnhandledApiExceptionFilter(new string[] { 
                         // add API endpoints here to automaically return non-HTML errors
+                        "/api/fe"
                     }));
                 });
                 services.Configure<RazorViewEngineOptions>(o =>
@@ -129,6 +134,14 @@ namespace ELA.App
                     configuration.RootPath = "ClientApp/dist";
                 });
             }
+
+            // Compression
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                options.Providers.Add<GzipCompressionProvider>();
+                options.Providers.Add<BrotliCompressionProvider>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -137,7 +150,7 @@ namespace ELA.App
             // -- Development tasks
             if (env.IsDevelopment())
             {
-                LocalDevelopmentTasks.MigrateDatabase(_configuration);
+                LocalDevelopmentTasks.MigrateDatabase(_configuration.GetConnectionString("Database"));
             }
 
             // -- Continue configuration
@@ -153,6 +166,7 @@ namespace ELA.App
                 // use HTTP locally to support HMR w/ parcel
                 app.UseHttpsRedirection();
             }
+            app.UseResponseCompression();
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -182,7 +196,14 @@ namespace ELA.App
                 {
                     if (!context.User.Identity.IsAuthenticated)
                     {
-                        await context.ChallengeAsync();
+                        if (context.Request.Path.StartsWithSegments("/backend.css"))
+                        {
+                            await next();
+                        }
+                        else
+                        {
+                            await context.ChallengeAsync();
+                        }
                     }
                     else
                     {
@@ -235,9 +256,9 @@ namespace ELA.App
 
                     if (env.IsDevelopment())
                     {
-                        LocalDevelopmentTasks.StartParcelServer(3333, "../../frontend/react-parcel-ts");
-                        spa.Options.StartupTimeout = TimeSpan.FromMinutes(1);
-                        spa.UseProxyToSpaDevelopmentServer("http://127.0.0.1:3333");
+                        spa.Options.DefaultPage = "/index.html";
+                        spa.Options.StartupTimeout = TimeSpan.FromSeconds(60);
+                        LocalDevelopmentTasks.StartFrontendService(spa, "../../frontend/react-parcel-ts", "yarn", (port) => $"run start --port {port}", "Server running at ");
                     }
                 });
             }

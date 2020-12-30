@@ -1,0 +1,79 @@
+@import "../variables";
+
+.gdb-button {
+  cursor: pointer;
+  font-size: $font-size-normal;
+  border-radius: 4px;
+  border: 0px;
+  outline: none;
+  line-height: 2rem;
+  min-height: 2rem;
+  padding: 0 $space-m 0 $space-m;
+  box-shadow: $shadow-main;
+  transition: $button-transitions;
+
+  &:active {
+    box-shadow: $shadow-push;
+  }
+
+  &:focus-within {
+    outline: dotted $sec-green;
+  }
+}
+a.gdb-button{
+  display: inline-block;
+  text-decoration: none;
+}
+
+.gdb-bs-primary,
+a.gdb-bs-primary {
+  background: $sec-blue;
+  background: $blue-gradient;
+  color: $text-color-inverse;
+
+  &:hover {
+    background: $sec-blue-dark;
+    background: $blue-gradient-dark;
+    color: $text-color-inverse;
+  }
+
+  &:active {
+    background: $sec-blue-dark;
+    background: $blue-gradient-dark;
+    color: $text-color-inverse;
+  }
+
+  &[disabled],
+  &[disabled]:hover,
+  &[disabled]:active {
+    background: $grey-lt;
+    color: $grey-med;
+    box-shadow: none;
+    cursor: default;
+  }
+}
+
+.gdb-bs-secondary,
+a.gdb-bs-secondary {
+  background: $grey-lt;
+  color: $pri-blue;
+
+  &:hover {
+    background: $sec-blue;
+    color: $text-color-inverse;
+  }
+
+  &:active {
+    background: $sec-blue;
+    color: $text-color-inverse;
+  }
+
+  &[disabled],
+  &[disabled]:hover,
+  &[disabled]:active {
+    background: $grey-lt;
+    color: $grey-med;
+    box-shadow: none;
+    cursor: default;
+  }
+}

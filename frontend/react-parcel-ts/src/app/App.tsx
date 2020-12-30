@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, NavLink } from 'react-router-dom';
 import { AdministrationPage } from "./pages/administration/administrationPage";
 import { UserPage } from "./pages/administration/userPage";
 import { HomePage } from "./pages/home/homePage";
@@ -11,8 +11,8 @@ export const App: React.SFC = () => (
       <div className="app-header"></div>
       <div className="app-menu">
         <ul>
-          <li><Link to="/" className="app-menu-item">Home</Link></li>
-          <li><Link to="/administration" className="app-menu-item">Administration</Link></li>
+          <li><NavLink to="/" className="app-menu-item" exact activeClassName="selected">Home</NavLink></li>
+          <li><NavLink to="/administration" className="app-menu-item" exact activeClassName="selected">Administration</NavLink></li>
           <li><a href="/account/logout" className="app-menu-item">Logout</a></li>
         </ul>
       </div>

@@ -3,20 +3,27 @@
     Layout = "../_Layout.cshtml";
     TempData["title"] = "Login";
 }
-<h1>Login</h1>
-@if (ViewData["ErrorMessage"] != null) { 
-    <div>@ViewData["ErrorMessage"]</div>
-}
-<form method="post" >
-    @Html.AntiForgeryToken()
-    @Html.Hidden("ReturnUrl", Model.ReturnUrl ?? "")
-    <label>
-        <span>Username</span>
-        @Html.TextBox("UserName")
-    </label>
-    <label>
-        <span>Password</span>
-        @Html.Password("Password")
-    </label>
-    <input type="submit" value="Log In" />
-</form>
+<div class="gdb-floating-box">
+    <h1>Sign In</h1>
+    @if (ViewData["ErrorMessage"] != null)
+    {
+        <div class="gdb-err-message">@ViewData["ErrorMessage"]</div>
+    }
+    <form method="post">
+        @Html.AntiForgeryToken()
+        @Html.Hidden("ReturnUrl", Model.ReturnUrl ?? "")
+        <label>
+            <span class="gdb-label-text">Username</span>
+            @Html.TextBoxFor(x => x.Username, new { placeholder = "youremail@example.com", @class = "gdb-pronounced" })
+        </label>
+        <label>
+            <span class="gdb-label-text">Password</span>
+            @Html.PasswordFor(x => x.Password, new { @class = "gdb-pronounced" })
+            <span class="gdb-sublink"><a href=""#" title="Click to reset password">Forgot Password?</a></span>
+        </label>
+        <input type="submit" value="Log In" class="gdb-button gdb-bs-primary" />
+        <div class="gdb-form-footer">
+            Need an account? <a href="#">Sign-up</a> for access!
+        </div>
+    </form>
+</div>

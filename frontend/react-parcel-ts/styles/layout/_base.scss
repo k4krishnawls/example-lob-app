@@ -1,0 +1,76 @@
+@import "../variables";
+
+
+@mixin standard-font{
+  font-size: $font-size-base;
+  font-family: $font-family;
+  color: $text-color-default;
+}
+
+html {
+  @include standard-font;
+}
+
+body{
+  background-color: $background-color-light;
+  margin: 0px;
+  @include standard-font;
+}
+
+h1, .h1 {
+  font-size: 1.5rem;
+}
+h2, .h2 {
+  font-size: 1.25rem;
+}
+h3, .h3 {
+  font-size: 1.15rem;
+}
+h4, .h4 {
+  font-size: 1rem;
+}
+h5, .h5 {
+  font-size: 1rem;
+}
+
+a, a:visited{
+  color: $sec-blue;
+  text-decoration: underline;
+}
+a:hover{
+  color: darken($sec-blue, 10%);
+  text-decoration: none;
+}
+a.disabled{
+  cursor: pointer;
+  color: $grey-med;
+  text-decoration: none;
+  pointer-events: none;
+}
+
+input[type=text],
+input[type=password],
+select {
+  border: 1px solid $grey-med;
+  border-radius: 2px;
+  padding: $space-xs;
+  @include standard-font;
+
+  &.gdb-pronounced {
+    padding: $space-s;
+  }
+
+  &:active,
+  &:focus {
+    border: 1px solid $sec-blue;
+    outline: none;
+  }
+}
+
+select {
+  // -webkit-appearance: none;
+  // -moz-appearance: none;
+  // appearance: none;
+  background-color: $background-color-white;
+  // background: url(https://stackoverflow.com/favicon.ico) 96% / 15% no-repeat #EEE;
+}

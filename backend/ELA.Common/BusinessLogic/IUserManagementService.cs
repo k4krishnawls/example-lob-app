@@ -9,5 +9,6 @@ namespace ELA.Common.BusinessLogic
     public interface IUserManagementService
     {
         Task<List<UserDTO>> GetAllUsersAsync();
+        Task<UserDTO> GetUserAsync(int id);
     }
 }

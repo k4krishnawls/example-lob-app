@@ -9,5 +9,6 @@ namespace ELA.Common.Persistence.Repositories
     public interface IUserRepository
     {
         Task<List<UserDTO>> GetAllAsync();
+        Task<UserDTO> GetByIdAsync(int id);
     }
 }

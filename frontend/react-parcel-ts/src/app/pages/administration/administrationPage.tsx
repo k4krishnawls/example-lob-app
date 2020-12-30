@@ -39,10 +39,7 @@ export const AdministrationPage: React.SFC = () => {
                   <td>{u.name}</td>
                   <td>{u.userType}</td>
                   <td>
-                    {u.id <= 0
-                      ? null
-                      : <Link to={`/administration/users/${u.id}`}>Edit</Link>
-                    }
+                    <Link to={`/administration/users/${u.id}`} className="gdb-button gdb-bs-primary">Edit</Link>
                   </td>
                 </tr>
               ))}
@@ -56,7 +53,7 @@ export const AdministrationPage: React.SFC = () => {
             <td></td>
             <td></td>
             <td>
-              <Link to="/administration/users/new">Add New</Link>
+              <Link to="/administration/users/new" className="gdb-button gdb-bs-primary">Add New</Link>
             </td>
           </tr>
         </tfoot>

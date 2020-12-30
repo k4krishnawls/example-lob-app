@@ -1,0 +1,12 @@
+@import "../variables";
+
+.gdb-button-group {
+    display: flex;
+    flex-direction:row;
+    justify-content: flex-end;
+    margin: $space-m 0;
+
+    & > * {
+      margin-left: $space-s;
+    }
+}

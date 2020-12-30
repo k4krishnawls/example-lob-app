@@ -23,8 +23,16 @@ namespace ELA.App.Controllers.Frontend
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync()
         {
-            var customers = await _userService.GetAllUsersAsync();
-            return Ok(customers);
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserAsync(int id)
+        {
+            var user = await _userService.GetUserAsync(id);
+            return Ok(user);
         }
     }
 }

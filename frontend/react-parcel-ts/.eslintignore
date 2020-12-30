@@ -6,3 +6,4 @@ wallaby.js
 tsconfig.json
 .eslintrc.js
 *.html
+*.scss

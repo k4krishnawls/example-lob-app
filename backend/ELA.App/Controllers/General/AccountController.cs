@@ -1,4 +1,5 @@
 ﻿using ELA.App.Controllers.Account.Models;
+using ELA.App.Controllers.General.Utility;
 using ELA.App.Security;
 using ELA.App.StartupConfiguration;
 using ELA.Common.Authentication;
@@ -19,10 +20,12 @@ namespace ELA.App.Controllers.Account
     public class AccountController : Controller
     {
         private ISignInManager _signInManager;
+        private IAccountCookies _cookieHandler;
 
-        public AccountController(ISignInManager signInManager)
+        public AccountController(ISignInManager signInManager, IAccountCookies cookieHandler)
         {
             _signInManager = signInManager;
+            _cookieHandler = cookieHandler;
         }
 
         [HttpGet("login")]
@@ -63,7 +66,7 @@ namespace ELA.App.Controllers.Account
                 new Claim(ClaimNames.UserName, result.UserName)
             }, SecurityConstants.CookieAuthScheme);
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(SecurityConstants.CookieAuthScheme, principal);
+            await _cookieHandler.SignInAsync(HttpContext, SecurityConstants.CookieAuthScheme, principal);
 
             if (!string.IsNullOrEmpty(model.ReturnUrl))
             {
@@ -76,7 +79,7 @@ namespace ELA.App.Controllers.Account
         [HttpGet("logout")]
         public async Task<IActionResult> LogoutAsync()
         {
-            await HttpContext.SignOutAsync(SecurityConstants.CookieAuthScheme);
+            await _cookieHandler.SignOutAsync(HttpContext, SecurityConstants.CookieAuthScheme);
             return View("Logout");
         }
 

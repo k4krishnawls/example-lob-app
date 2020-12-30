@@ -1,0 +1,65 @@
+@import "../variables";
+
+.app-body {
+  display: grid;
+  grid-template-columns:  [start] 200px [content-start] auto [end];
+  grid-template-rows:  [top] $space-l [content-top] auto [bottom];
+  height: 100vh;
+  width: 100vw;
+  overflow: auto;
+}
+
+.app-header{
+  line-height: $space-l;
+}
+
+.app-menu {
+  grid-column-start: start;
+  grid-column-end: content-start;
+  grid-row-start: top;
+  grid-row-end: content-start;
+  background-color: $background-color-white;
+  padding-top: $space-l;
+
+  & > ul {
+    list-style: none outside none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.app-menu-item {
+  display: block;
+  padding: .5rem 1rem;
+  margin: .25rem 0;
+  border-left: 4px solid transparent;
+
+  &.selected{
+    background: $menu-gradient;
+    border-left: 4px solid $pri-blue;
+  }
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: $menu-gradient-end;
+    // border-left: 4px solid $sec-grey;
+    text-decoration: none;
+  }
+}
+
+.app-content {
+  grid-column-start: content-start;
+  grid-column-end: end;
+  grid-row-start: content-top;
+  grid-row-end: bottom;
+  padding: 0.25rem;
+}
+
+.app-section {
+  margin: 1rem;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  padding: 1rem;
+  background-color: $background-color-white;
+}
