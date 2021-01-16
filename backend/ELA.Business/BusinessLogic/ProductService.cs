@@ -8,19 +8,20 @@ using System.Threading.Tasks;
 
 namespace ELA.Business.BusinessLogic
 {
-    public class ProductService : BusinessServiceBase, IProductService
+    public class ProductService : IProductService
     {
-        private IPersistence _persistence;
+        private IBusinessServiceOperator _busOp;
 
-        public ProductService(IPersistence persistence)
+        public ProductService(IBusinessServiceOperator busOp)
         {
-            _persistence = persistence;
+            _busOp = busOp;
         }
 
         public async Task<List<ProductTypeDTO>> GetAllProductTypesAsync()
         {
-            return await BusinessQuery(async () => {
-                return await _persistence.Products.GetAllTypesAsync();
+            return await _busOp.Query(async (persistence) =>
+            { 
+                return await persistence.Products.GetAllTypesAsync();
             });
         }
     }

@@ -1,18 +1,23 @@
-﻿using System;
+﻿using ELA.Common.BusinessLogic;
+using ELA.Common.Persistence;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace ELA.Business.BusinessLogic
+namespace ELA.Business
 {
-    public abstract class BusinessServiceBase
+    public class BusinessServiceOperatorWithRetry : IBusinessServiceOperator
     {
         private readonly RetryPolicy _retryPolicy;
+        private IPersistence _persistence;
 
-        public BusinessServiceBase()
+        public BusinessServiceOperatorWithRetry(IPersistence persistence)
         {
+            _persistence = persistence;
+
             // mix of suggestions from MSDN
             // https://docs.microsoft.com/en-us/azure/architecture/best-practices/retry-service-specific#sql-database-using-adonet
             // 1. Chose Exponential backoff based on experience 
@@ -25,25 +30,25 @@ namespace ELA.Business.BusinessLogic
                 TimeSpan.FromMilliseconds(50));
         }
 
-        protected async Task BusinessOperation(Func<Task> action)
+        public async Task Operation(Func<IPersistence, Task> action)
         {
             await _retryPolicy.ExecuteAsync(async () =>
             {
                 using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    await action();
+                    await action(_persistence);
                     scope.Complete();
                 }
             });
         }
 
-        protected async Task<T> BusinessOperation<T>(Func<Task<T>> action)
+        public async Task<T> Operation<T>(Func<IPersistence, Task<T>> action)
         {
             T outerResult = await _retryPolicy.ExecuteAsync(async () =>
             {
                 using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    T innerResult = await action();
+                    T innerResult = await action(_persistence);
                     scope.Complete();
                     return innerResult;
                 }
@@ -51,13 +56,13 @@ namespace ELA.Business.BusinessLogic
             return outerResult;
         }
 
-        protected async Task<T> BusinessQuery<T>(Func<Task<T>> action)
+        public async Task<T> Query<T>(Func<IPersistence, Task<T>> action)
         {
             T outerResult = await _retryPolicy.ExecuteAsync(async () =>
             {
                 using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    T innerResult = await action();
+                    T innerResult = await action(_persistence);
                     scope.Complete();
                     return innerResult;
                 }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using ELA.App.Controllers.Frontend;
 using ELA.App.Controllers.Frontend.Models;
+using ELA.Business;
 using ELA.Business.BusinessLogic;
 using ELA.Common;
 using ELA.Common.DTOs.User;
@@ -34,7 +35,8 @@ namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
         public void BeforeEachTest()
         {
             var persistence = new DapperPersistence(Database.GetConnectionSettings());
-            var service = new UserManagementService(persistence);
+            var busOp = new BusinessServiceOperatorWithRetry(persistence);
+            var service = new UserManagementService(busOp);
             _controller = new UsersController(service)
             {
                 ControllerContext = GetControllerContextForFrontEnd()

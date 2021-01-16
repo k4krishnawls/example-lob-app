@@ -1,4 +1,5 @@
 ﻿using ELA.App.Controllers.Frontend;
+using ELA.Business;
 using ELA.Business.BusinessLogic;
 using ELA.Common.DTOs.Product;
 using ELA.Persistence;
@@ -23,7 +24,8 @@ namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
         {
             Database.ClearDatabase();
             var persistence = new DapperPersistence(Database.GetConnectionSettings());
-            var service = new ProductService(persistence);
+            var busOp = new BusinessServiceOperatorWithRetry(persistence);
+            var service = new ProductService(busOp);
             _controller = new ProductsController(service)
             {
                 ControllerContext = GetControllerContextForFrontEnd()

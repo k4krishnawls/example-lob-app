@@ -12,51 +12,51 @@ using System.Threading.Tasks;
 
 namespace ELA.Business.BusinessLogic
 {
-    public class UserManagementService : BusinessServiceBase, IUserManagementService
+    public class UserManagementService : IUserManagementService
     {
-        private IPersistence _persistence;
+        private IBusinessServiceOperator _busOp;
 
-        public UserManagementService(IPersistence persistence)
+        public UserManagementService(IBusinessServiceOperator busOp)
         {
-            _persistence = persistence;
+            _busOp = busOp;
         }
 
         public async Task<int> CreateUserAsync(UserCreateDTO createUser, IAuthContext authContext)
         {
-            return await BusinessOperation(async () =>
+            return await _busOp.Operation(async (persistence) =>
             {
                 var newUser = new UserDTO(createUser, UserType.InteractiveUser, DateTime.UtcNow, authContext.UserId);
-                return await _persistence.Users.CreateUserAsync(newUser);
+                return await persistence.Users.CreateUserAsync(newUser);
             });
         }
 
         public async Task<List<UserDTO>> GetAllUsersAsync()
         {
-            return await BusinessQuery(async () =>
+            return await _busOp.Query(async (persistence) =>
             {
-                return await _persistence.Users.GetAllAsync();
+                return await persistence.Users.GetAllAsync();
             });
         }
 
         public async Task<UserDTO> GetUserAsync(int id)
         {
-            return await BusinessQuery(async () =>
+            return await _busOp.Query(async (persistence) =>
             {
-                return await _persistence.Users.GetByIdAsync(id);
+                return await persistence.Users.GetByIdAsync(id);
             });
         }
 
         public async Task UpdateUserAsync(UserUpdateDTO update, IAuthContext authContext)
         {
-            await BusinessOperation(async () =>
+            await _busOp.Operation(async (persistence) =>
             {
-                var user = await _persistence.Users.GetByIdAsync(update.Id);
+                var user = await persistence.Users.GetByIdAsync(update.Id);
                 if (user == null)
                 {
                     throw new NotFoundException("User", update.Id);
                 }
                 user.ApplyUpdate(update, DateTime.UtcNow, authContext.UserId);
-                await _persistence.Users.SaveUserAsync(user);
+                await persistence.Users.SaveUserAsync(user);
             });
         }
     }
