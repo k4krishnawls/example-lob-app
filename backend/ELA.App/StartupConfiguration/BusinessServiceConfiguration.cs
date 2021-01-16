@@ -1,4 +1,5 @@
-﻿using ELA.Business.BusinessLogic;
+﻿using ELA.Business;
+using ELA.Business.BusinessLogic;
 using ELA.Common.BusinessLogic;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,6 +13,7 @@ namespace ELA.App.StartupConfiguration
     {
         public static void Configure(IServiceCollection services)
         {
+            services.AddScoped<IBusinessServiceOperator, BusinessServiceOperatorWithRetry>();
             services.AddScoped<IInteractiveUserQueryService, InteractiveUserQueryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IUserManagementService, UserManagementService>();
