@@ -9,5 +9,6 @@ namespace ELA.Common.Persistence
     {
         ICustomerRepository Customers { get; }
         IUserRepository Users { get; }
+        IProductRepository Products { get; }
     }
 }

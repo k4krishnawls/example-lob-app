@@ -33,3 +33,9 @@ export enum UserType {
   InteractiveUser = 1,
   SystemUser = 2
 }
+
+export interface ProductType {
+  id: number;
+  displayName: string;
+  updatedOn: Date;
+}

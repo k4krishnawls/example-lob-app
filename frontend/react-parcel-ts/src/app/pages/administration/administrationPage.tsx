@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Section } from "../../components/section";
-import { User } from "../../types";
+import { ProductType, User } from "../../types";
 import { useFetch } from "../../utilities/useFetch";
+import { ProductTypeTable } from './_components/ProductTypeTable';
+import { UserTable } from './_components/UserTable';
 
-export const AdministrationPage: React.SFC = () => {
+export const AdministrationPage: React.FunctionComponent = () => {
   const users = useFetch<User[]>("/api/fe/users", (rd: any) => {
     return rd.map((ru: any) => ({
       id: ru.id,
@@ -15,49 +16,24 @@ export const AdministrationPage: React.SFC = () => {
     }));
   });
 
+  const productTypes = useFetch<ProductType[]>("/api/fe/products/types", (rd: any) => {
+    return rd.map((ru: any) => ({
+      id: ru.id,
+      displayName: ru.displayName,
+      updatedOn: new Date(ru.updatedOn)
+    }));
+  });
+
   return (
-    <Section>
-      <h1>Users</h1>
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Username</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.data == null
-            ? <tr><td colSpan={5}>Loading...</td></tr>
-            : <>
-              {users.data.map(u => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.username}</td>
-                  <td>{u.name}</td>
-                  <td>{u.userType}</td>
-                  <td>
-                    <Link to={`/administration/users/${u.id}`} className="gdb-button gdb-bs-primary">Edit</Link>
-                  </td>
-                </tr>
-              ))}
-            </>
-          }
-        </tbody>
-        <tfoot>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <Link to="/administration/users/new" className="gdb-button gdb-bs-primary">Add New</Link>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </Section>
+    <>
+      <Section>
+        <h1>Users</h1>
+        <UserTable users={users} />
+      </Section>
+      <Section>
+        <h1>ProductTypes</h1>
+        <ProductTypeTable productTypes={productTypes} />
+      </Section>
+    </>
   );
 };

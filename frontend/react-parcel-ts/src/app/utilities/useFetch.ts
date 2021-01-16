@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface Response<T> {
+export interface Response<T> {
   data: T | null;
   error: any | null;
   isLoading: boolean;
@@ -21,6 +21,7 @@ export const useFetch = <T extends unknown>(url: string, translate: (rawData: an
       setIsLoading(false);
     }
     catch (error) {
+      setIsLoading(false);
       setError(error);
     }
   }
