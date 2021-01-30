@@ -41,6 +41,7 @@ jobs:
             yarn install
             yarn run ci:lint --output-file ~/reports/eslint.xml
             yarn run ci:test
+            ls
 
       - run: 
           name: Front-end Build
