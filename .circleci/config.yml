@@ -6,9 +6,14 @@ orbs:
 jobs:
   build-application:
     docker: 
-      - image: mcr.microsoft.com/dotnet/sdk:5.0
+      # Using special pkg per https://github.com/NuGet/Announcements/issues/49
+      # later switch back to:
+      # - image: mcr.microsoft.com/dotnet/sdk:5.0
+      - image: mcr.microsoft.com/dotnet/sdk:5.0.102-ca-patch-buster-slim
     environment:
       VERSION_NUMBER: 0.0.0.<< pipeline.number >>
+      JEST_JUNIT_OUTPUT_DIR: "~/reports/"
+      JEST_JUNIT_OUTPUT_NAME: "frontend.xml"
       JEST_JUNIT_ANCESTOR_SEPARATOR: " > "
       JEST_JUNIT_SUITE_NAME: "{filename}"
       JEST_JUNIT_CLASSNAME: "{classname}"
