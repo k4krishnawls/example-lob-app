@@ -1,0 +1,183 @@
+version: 2.1
+
+orbs:
+  discord: antonioned/discord@0.1.0
+
+jobs:
+  build-application:
+    docker: 
+      - image: mcr.microsoft.com/dotnet/sdk:5.0
+    environment:
+      VERSION_NUMBER: 0.0.0.<< pipeline.number >>
+      JEST_JUNIT_ANCESTOR_SEPARATOR: " > "
+      JEST_JUNIT_SUITE_NAME: "{filename}"
+      JEST_JUNIT_CLASSNAME: "{classname}"
+      JEST_JUNIT_TITLE: "{classname} > {title}"
+    steps:
+      - checkout
+      - run: 
+          name: Install Build/System Dependencies
+          command:
+            |
+            apt-get update -yq \
+              && apt-get install curl gnupg -yq \
+              && curl -sL https://deb.nodesource.com/setup_14.x | bash \
+              && apt-get install nodejs -yq
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+            apt update && apt install yarn -yq
+            apt install zip -yq
+
+      - run: 
+          name: Front-end Test
+          command: 
+            |
+            cd frontend
+            yarn install
+            yarn run ci:lint --output-file ~/reports/eslint.xml
+            yarn run ci:test
+
+      - run: 
+          name: Front-end Build
+          command: 
+            |
+            cd frontend
+            yarn run build
+
+      - run:
+          name: Back-end Test
+          command:
+            |
+            cd backend
+            cp ./ELA.App.Tests/appsettings.none.json ./ELA.App.Tests/appsettings.json
+            dotnet test --filter "TestCategory!=Database-Tests" -l trx -l console -v m -r ~/reports/
+
+      - run:
+          name: Back-end Test Results
+          when: always
+          command:
+            |
+            dotnet tool install -g trx2junit
+            export PATH="$PATH:/root/.dotnet/tools"
+            trx2junit ~/reports/*.trx
+
+                  
+      - store_test_results:
+          path: ~/reports
+      - store_artifacts:
+          path: ~/reports  
+
+      - run:
+          name: Build for Release
+          command: 
+            |
+            cd backend
+            dotnet publish ./ELA.App/ELA.App.csproj -c Release /property:Version=$VERSION_NUMBER -o ../app-publish --runtime win-x64
+            dotnet publish ./ELA.Tools.DatabaseMigration/ELA.Tools.DatabaseMigration.csproj -c Release /property:Version=$VERSION_NUMBER -o ../app-migrate --self-contained -r linux-musl-x64
+            cd ../app-publish
+            zip -r ../app-publish.zip *
+            cd ../app-migrate
+            chmod 755 ELA.Tools.DatabaseMigration
+
+      - persist_to_workspace: # store the built files into the workspace for other jobs.
+          root: ./
+          paths:
+            - app-publish.zip
+            - app-migrate
+            - tools/PollHealthcheck
+
+      - discord/status:
+          fail_only: true
+          failure_message: "Application: **$CIRCLE_JOB** job has failed!"
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
+          mentions: "@employees"
+
+  deploy-application:
+    docker:
+      - image: microsoft/azure-cli:latest
+    environment:
+      VERSION_NUMBER: 0.0.0.<< pipeline.number >>
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - run: 
+          name: Install Dependencies
+          command:
+            |
+            # dependencies to run dotnet db migration tool
+            apk add libc6-compat
+            ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
+            # dependencies for monitoring health checkout
+            apk add nodejs           
+          
+      - run: 
+          name: Azure Staging Deploy
+          command:
+            |
+            cd /tmp/workspace
+            ls -l
+            # Deploy to staging slot
+            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
+            az webapp deployment source config-zip -g ${AzureResourceGroup} -n ${AzureWebApp} -s staging --src app-publish.zip
+            az webapp start -g ${AzureResourceGroup} -n ${AzureWebApp} -s staging
+            # Poll health endpoint, 500ms intervals, 15s timeout
+            cd /tmp/workspace/tools/PollHealthcheck
+            node index.js ${AzureStagingUrl}/health 500 15000
+
+      - run:
+          name: Database Migration
+          command: 
+            |
+            ip=$(curl -s https://api.ipify.org)
+            echo "Adding firewall rule for: $ip"
+            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
+            az sql server firewall-rule create --subscription ${AzureSubscription} -s ${AzureSqlServerName} -g ${AzureResourceGroup} -n CircleCI-Job-$CIRCLE_JOB --start-ip-address $ip --end-ip-address $ip
+            cd /tmp/workspace/app-migrate
+            ./ELA.Tools.DatabaseMigration --ConnectionString "${AzureDatabaseConnectionString}"
+
+      - run:
+          name: Database Migration - Firewall Cleanup
+          command: 
+            |
+            ip=$(curl -s https://api.ipify.org)
+            echo "Removing firewall rule for: $ip"
+            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
+            az sql server firewall-rule delete --subscription ${AzureSubscription} -s ${AzureSqlServerName} -g ${AzureResourceGroup} -n CircleCI-Job-$CIRCLE_JOB
+          when: always
+
+      - run: 
+          name: Azure Production Swap
+          command:
+            |
+            # Poll health endpoint, 500ms intervals, 15s timeout
+            cd /tmp/workspace/tools/PollHealthcheck
+            node index.js ${AzureStagingUrl}/health 500 15000
+            # Swap into production
+            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
+            az webapp deployment slot swap -g ${AzureResourceGroup} -n  ${AzureWebApp} -s staging --target-slot production
+            # Shutdown old version
+            az webapp stop -g ${AzureResourceGroup} -n ${AzureWebApp} -s staging
+
+
+      - discord/status:
+          fail_only: true
+          failure_message: "Application: **$CIRCLE_JOB** deploy has failed!"
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
+          mentions: "@employees"
+
+      - discord/status:
+          success_only: true
+          success_message: "Application: **$CIRCLE_JOB** deployed successfully: $VERSION_NUMBER"
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
+
+workflows:
+  build_and_deploy:
+    jobs:
+      - build-application
+      - deploy-application:
+          requires:
+            - build-application
+          filters: 
+            branches:
+              only: main

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
 {
     [TestFixture]
+    [Category("Database-Tests")]
     public class CustomersControllerTests : IntegrationTestsBase
     {
         private CustomersController _controller;

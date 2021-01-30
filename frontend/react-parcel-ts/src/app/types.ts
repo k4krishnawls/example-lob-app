@@ -1,11 +1,10 @@
-
 export interface Loadable<T> {
   data: T | null;
   status: LoadStatus;
 }
 
 export const newLoadable = <T>() => ({
-  data: null,
+  data: null as T | null,
   status: LoadStatus.New
 });
 

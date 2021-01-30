@@ -15,6 +15,7 @@ namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
 {
 
     [TestFixture]
+    [Category("Database-Tests")]
     public class ProductControllerTests : IntegrationTestsBase
     {
         private ProductsController _controller;

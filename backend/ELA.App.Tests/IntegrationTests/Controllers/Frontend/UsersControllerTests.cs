@@ -18,6 +18,7 @@ namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
 {
 
     [TestFixture]
+    [Category("Database-Tests")]
     public class UsersControllerTests : IntegrationTestsBase
     {
         public const int NONEXISTENT_USER_ID = -1000;

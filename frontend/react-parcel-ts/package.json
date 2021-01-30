@@ -8,7 +8,9 @@
     "watch": "parcel watch ./src/index.html ./src/backend.scss",
     "start": "concurrently -r \"parcel watch ./src/backend.scss\" \"parcel serve ./src/index.html\"",
     "test": "jest",
-    "lint": "eslint ./src/**"
+    "lint": "eslint ./src/**",
+    "ci:lint": "eslint ./src/**/*.ts --format junit",
+    "ci:test": "jest src --reporters=jest-junit"
   },
   "author": "Eli Weinstock-Herman",
   "license": "MIT",
@@ -37,6 +39,7 @@
     "eslint-plugin-react": "^7.20.6",
     "jest": "^26.4.2",
     "jest-cli": "^26.4.2",
+    "jest-junit": "^12.0.0",
     "parcel-bundler": "^1.12.4",
     "sass": "^1.26.11",
     "ts-jest": "^26.2.0",

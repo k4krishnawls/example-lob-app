@@ -32,7 +32,6 @@ module.exports = {
   rules: {
     "semi": "error",
     "brace-style": ["error", "stroustrup"],
-    "editorconfig/editorconfig": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
