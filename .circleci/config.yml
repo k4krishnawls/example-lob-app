@@ -32,7 +32,7 @@ jobs:
           name: Front-end Test
           command: 
             |
-            cd frontend
+            cd frontend/react-parcel-ts
             yarn install
             yarn run ci:lint --output-file ~/reports/eslint.xml
             yarn run ci:test
@@ -41,7 +41,7 @@ jobs:
           name: Front-end Build
           command: 
             |
-            cd frontend
+            cd frontend/react-parcel-ts
             yarn run build
 
       - run:
