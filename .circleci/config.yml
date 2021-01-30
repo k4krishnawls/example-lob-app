@@ -61,7 +61,7 @@ jobs:
             export PATH="$PATH:/root/.dotnet/tools"
             trx2junit ~/reports/*.trx
 
-                  
+
       - store_test_results:
           path: ~/reports
       - store_artifacts:
