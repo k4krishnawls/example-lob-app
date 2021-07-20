@@ -38,3 +38,44 @@ export interface ProductType {
   displayName: string;
   updatedOn: Date;
 }
+
+
+
+
+export type DailyRevenue = {
+  date: Date;
+  amount: number;
+};
+
+export enum OrderStatus {
+  Ordered = 1,
+  Processing = 2,
+  Delivering = 3,
+  Delivered = 4,
+  Cancelled = 5
+}
+
+export type OrderSummary = {
+  orderDate: Date;
+  status: OrderStatus;
+  customer: {
+    id: number;
+    name: string;
+    avatar?: string;
+  };
+  itemCount: number;
+  orderTotal: number;
+};
+
+
+export type ReviewSummary = {
+  reviewDate: Date;
+  score: number;
+  excerpt: string;
+  customer: {
+    id: number;
+    name: string;
+    avatar?: string;
+  };
+};
+

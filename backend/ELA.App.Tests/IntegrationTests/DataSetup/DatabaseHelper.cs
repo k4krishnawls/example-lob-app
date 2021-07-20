@@ -21,12 +21,19 @@ namespace ELA.App.Tests.IntegrationTests.DataSetup
             DapperPersistence.PatchDapper();
 
             Customers = new Customers(this);
+            Orders = new Orders(this);
+            Products = new Products(this);
+            ProductCategories = new ProductCategories(this);
             ProductTypes = new ProductTypes(this);
             Users = new Users(this);
         }
 
         public Customers Customers { get; }
+        public CustomerGroups CustomerGroups { get; }
+        public Orders Orders { get; }
+        public Products Products { get; }
         public ProductTypes ProductTypes { get; }
+        public ProductCategories ProductCategories { get; }
         public Users Users { get; }
 
 

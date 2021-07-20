@@ -21,11 +21,13 @@ namespace ELA.Persistence
             PatchDapper();
 
             Customers = new CustomerRepository(_settings.Database);
+            Orders = new OrderRepository(_settings.Database);
             Products = new ProductRepository(_settings.Database);
             Users = new UserRepository(_settings.Database);
         }
 
         public ICustomerRepository Customers { get; }
+        public IOrderRepository Orders { get; }
         public IProductRepository Products { get; }
 
         public IUserRepository Users { get; }

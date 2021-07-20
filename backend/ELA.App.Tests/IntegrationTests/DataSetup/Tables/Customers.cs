@@ -19,15 +19,16 @@ namespace ELA.App.Tests.IntegrationTests.DataSetup.Tables
         {
             using (var conn = _databaseHelper.GetConnection())
             {
-                var sql = @"
-                    INSERT INTO dbo.Customer(Name)
-                    VALUES(@Name);
-                    SELECT * FROM dbo.Customer WHERE Id = scope_identity();
-                ";
                 var param = new
                 {
-                    name
+                    name,
+                    Email = name.Replace(" ", "") + "@place.test"
                 };
+                var sql = @"
+                    INSERT INTO dbo.Customer(Name, Email)
+                    VALUES(@Name, @Email);
+                    SELECT * FROM dbo.Customer WHERE Id = scope_identity();
+                ";
                 return conn.QuerySingle<CustomerDTO>(sql, param);
             }
         }

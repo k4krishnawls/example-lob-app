@@ -15,7 +15,6 @@ namespace ELA.App.StartupConfiguration
         {
             services.AddScoped<IBusinessServiceOperator, BusinessServiceOperatorWithRetry>();
             services.AddScoped<IInteractiveUserQueryService, InteractiveUserQueryService>();
-            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IUserManagementService, UserManagementService>();
         }
     }

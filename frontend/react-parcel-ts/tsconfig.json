@@ -9,8 +9,9 @@
     "allowSyntheticDefaultImports": true,
     "lib": [
       "dom",
-      "es2015"
+      "es6"
     ],
+    "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
       "~*": [

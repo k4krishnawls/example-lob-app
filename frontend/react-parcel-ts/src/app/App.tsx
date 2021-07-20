@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { BrowserRouter, Switch, Route, NavLink } from 'react-router-dom';
-import { AdministrationPage } from "./pages/administration/administrationPage";
-import { UserPage } from "./pages/administration/userPage";
-import { HomePage } from "./pages/home/homePage";
+import { DashboardPage } from "./pages/dashboard/Dashboard";
 import { NotFoundPage } from "./pages/errors/notFoundPage";
 
 export const App: React.SFC = () => (
@@ -18,9 +16,7 @@ export const App: React.SFC = () => (
       </div>
       <div className="app-content">
         <Switch>
-          <Route path="/" exact={true} component={HomePage} />
-          <Route path="/administration" exact={true} component={AdministrationPage} />
-          <Route path="/administration/users/:id" exact={true} component={UserPage} />
+          <Route path="/" exact={true} component={DashboardPage} />
           <Route component={NotFoundPage} />
         </Switch>
       </div>
