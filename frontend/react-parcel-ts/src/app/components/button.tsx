@@ -7,7 +7,7 @@ interface IProps {
 }
 
 export const Button: React.FunctionComponent<IProps> = (props) => {
-  const className = `gdb-button ${props.flavor == "secondary" ? "gdb-bs-secondary" : "gdb-bs-primary"}`;
+  const className = `lob-button ${props.flavor == "secondary" ? "lob-bs-secondary" : "lob-bs-primary"}`;
   const disabled = props.enable === false;
   return (
     <button

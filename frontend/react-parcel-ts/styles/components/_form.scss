@@ -1,6 +1,6 @@
 @import "../variables";
 
-.gdb-form-error{
+.lob-form-error{
   display: block;
   padding: $space-m;
   margin: $space-m 0;
@@ -10,7 +10,7 @@
   border-radius: 8px;
 }
 
-.gdb-form-error-fields {
+.lob-form-error-fields {
   & > dt {
     display: block;
     margin: $space-m 0 0 $space-s;

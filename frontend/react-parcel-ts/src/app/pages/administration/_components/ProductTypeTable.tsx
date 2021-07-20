@@ -29,7 +29,7 @@ export const ProductTypeTable: React.FunctionComponent<IProps> = (props: IProps)
                 <td>{pt.displayName}</td>
                 <td>{pt.updatedOn.toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                 <td>
-                  <Link to={`/administration/productTypes/${pt.id}`} className="gdb-button gdb-bs-primary">Edit</Link>
+                  <Link to={`/administration/productTypes/${pt.id}`} className="lob-button lob-bs-primary">Edit</Link>
                 </td>
               </tr>
             ))}
@@ -43,7 +43,7 @@ export const ProductTypeTable: React.FunctionComponent<IProps> = (props: IProps)
           <td></td>
           <td></td>
           <td>
-            <Link to="/administration/productTypes/new" className="gdb-button gdb-bs-primary">Add New</Link>
+            <Link to="/administration/productTypes/new" className="lob-button lob-bs-primary">Add New</Link>
           </td>
         </tr>
       </tfoot>

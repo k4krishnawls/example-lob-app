@@ -2,7 +2,7 @@
 @import "./layout/base";
 @import "./components/button";
 
-.gdb-main {
+.lob-main {
   display: grid;
   grid-template-columns: [start] auto [end];
   grid-template-rows: [top] 70px [top-content] auto [bottom];
@@ -10,7 +10,7 @@
   width: 100vw;
 }
 
-.gdb-header {
+.lob-header {
   display: block;
   grid-column-start: start;
   grid-column-end: end;
@@ -21,7 +21,7 @@
   background-color: $background-color-white;
 }
 
-.gdb-body {
+.lob-body {
   display: block;
   grid-column-start: start;
   grid-column-end: end;
@@ -30,12 +30,12 @@
   position: relative;
 }
 
-.gdb-header-content {
+.lob-header-content {
   line-height: 56px;
 }
 
-.gdb-header-content,
-.gdb-body-content {
+.lob-header-content,
+.lob-body-content {
   margin-left: auto;
   margin-right: auto;
   max-width: 1140px;
@@ -44,7 +44,7 @@
   flex-direction: row;
 }
 
-.gdb-logo {
+.lob-logo {
   color: $grey-med;
   text-decoration: none;
   margin: 0;
@@ -53,12 +53,12 @@
   flex: 0 0 auto;
 }
 
-.gdb-logo-img {
+.lob-logo-img {
   width: 56px;
   height: 56px;
 }
 
-.gdb-logo.gdb-logo-name {
+.lob-logo.lob-logo-name {
   border-left: 3px solid $pri-blue;
   line-height: 56px;
   height: 52px;
@@ -66,7 +66,7 @@
   padding-left: 0.75rem;
 }
 
-.gdb-floating-box {
+.lob-floating-box {
   display: block;
   margin: 80px auto;
   max-width: 800px;
@@ -77,18 +77,18 @@
   box-shadow: $shadow-main;
 }
 
-  .gdb-floating-box > h1 {
+  .lob-floating-box > h1 {
       font-size: 2.5rem;
       margin-top: 0;
       color: $pri-blue;
   }
 
-.gdb-err-message {
+.lob-err-message {
   text-align: center;
   color: $sec-pink;
 }
 
-.gdb-floating-box {
+.lob-floating-box {
   width: 400px;
 }
 
@@ -98,7 +98,7 @@ form {
   align-items: stretch;
 }
 
-.gdb-label-text {
+.lob-label-text {
   display: block;
   font-size: 0.952rem; /* $font-size-small */
   margin: 16px 0 8px 0; /* $space-m 0 $space-s 0 */
@@ -113,29 +113,29 @@ input[type=password] {
   border-color: $pri-blue;
 }
 
-.gdb-sublink {
+.lob-sublink {
   display: block;
   text-align: right;
   font-size: 90%;
   margin: 8px 0 0 0; /* $space-s 0 0 0 */
 }
 
-.gdb-button {
+.lob-button {
   margin: 32px 0 16px 0; /* $space-l 0 $space-m 0 */
 }
 
-a.gdb-button,
-a.gdb-button:hover {
+a.lob-button,
+a.lob-button:hover {
   display: inline-block;
   color: white;
   text-decoration: none;
 }
 
-.gdb-form-row .gdb-button {
+.lob-form-row .lob-button {
   margin: 16px 0 16px 0; /* $space-l 0 $space-m 0 */
 }
 
-.gdb-form-footer {
+.lob-form-footer {
   text-align: center;
   font-size: 0.952rem; /* $font-size-small */
 }

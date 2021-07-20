@@ -186,7 +186,7 @@ export class UserPage extends React.Component<IProps, IState>{
             <input type="text" value={user.username} onChange={(v) => this.updateUser({ username: v.target.value })} />
           </label>
           <ButtonGroup>
-            <Link to="/administration" className="gdb-button gdb-bs-secondary">Cancel</Link>
+            <Link to="/administration" className="lob-button lob-bs-secondary">Cancel</Link>
             <Button
               enable={user.name.length > 0}
               onClick={() => this.saveUser()}
@@ -200,9 +200,9 @@ export class UserPage extends React.Component<IProps, IState>{
   private renderSaveStatus() {
     switch (this.state.saveStatus) {
       case "saving":
-        return <div className="gdb-save-status">Saving...</div>;
+        return <div className="lob-save-status">Saving...</div>;
       case "saved":
-        return <AnimateOnChange><div className="gdb-save-status">Saved</div></AnimateOnChange>;
+        return <AnimateOnChange><div className="lob-save-status">Saved</div></AnimateOnChange>;
       case "none":
       default:
         return null;
@@ -213,12 +213,12 @@ export class UserPage extends React.Component<IProps, IState>{
     const { saveError, saveFieldErrors } = this.state;
     if (!saveError && !saveFieldErrors) return;
     return (
-      <div className="gdb-form-error">
+      <div className="lob-form-error">
         {!saveError ? null :
-          <div className="gdb-form-error-message">{saveError}</div>
+          <div className="lob-form-error-message">{saveError}</div>
         }
         {!saveFieldErrors ? null :
-          <dl className="gdb-form-error-fields">
+          <dl className="lob-form-error-fields">
             {saveFieldErrors.map(f => (
               <>
                 <dt>{f.field}</dt>

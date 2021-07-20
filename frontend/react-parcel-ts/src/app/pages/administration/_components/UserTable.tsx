@@ -31,7 +31,7 @@ export const UserTable: React.FunctionComponent<IProps> = (props: IProps) => {
                 <td>{u.name}</td>
                 <td>{u.userType}</td>
                 <td>
-                  <Link to={`/administration/users/${u.id}`} className="gdb-button gdb-bs-primary">Edit</Link>
+                  <Link to={`/administration/users/${u.id}`} className="lob-button lob-bs-primary">Edit</Link>
                 </td>
               </tr>
             ))}
@@ -45,7 +45,7 @@ export const UserTable: React.FunctionComponent<IProps> = (props: IProps) => {
           <td></td>
           <td></td>
           <td>
-            <Link to="/administration/users/new" className="gdb-button gdb-bs-primary">Add New</Link>
+            <Link to="/administration/users/new" className="lob-button lob-bs-primary">Add New</Link>
           </td>
         </tr>
       </tfoot>

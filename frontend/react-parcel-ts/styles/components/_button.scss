@@ -1,6 +1,6 @@
 @import "../variables";
 
-.gdb-button {
+.lob-button {
   cursor: pointer;
   font-size: $font-size-normal;
   border-radius: 4px;
@@ -20,13 +20,13 @@
     outline: dotted $sec-green;
   }
 }
-a.gdb-button{
+a.lob-button{
   display: inline-block;
   text-decoration: none;
 }
 
-.gdb-bs-primary,
-a.gdb-bs-primary {
+.lob-bs-primary,
+a.lob-bs-primary {
   background: $sec-blue;
   background: $blue-gradient;
   color: $text-color-inverse;
@@ -53,8 +53,8 @@ a.gdb-bs-primary {
   }
 }
 
-.gdb-bs-secondary,
-a.gdb-bs-secondary {
+.lob-bs-secondary,
+a.lob-bs-secondary {
   background: $grey-lt;
   color: $pri-blue;
 
