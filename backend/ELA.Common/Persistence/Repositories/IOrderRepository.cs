@@ -10,5 +10,6 @@ namespace ELA.Common.Persistence.Repositories
     public interface IOrderRepository
     {
         Task<List<OrderSummaryDTO>> GetPendingOrdersAsync();
+        Task<List<OrderSummaryDTO>> GetNewCustomerOrdersAsync();
     }
 }

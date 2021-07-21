@@ -56,6 +56,7 @@ export enum OrderStatus {
 }
 
 export type OrderSummary = {
+  id: number;
   orderDate: Date;
   status: OrderStatus;
   customer: {

@@ -28,6 +28,14 @@ namespace ELA.Business.BusinessLogic
             });
         }
 
+        public async Task<List<OrderSummaryDTO>> GetNewCustomerOrdersAsync()
+        {
+            return await _busOp.Query(async (persistence) =>
+            {
+                return await persistence.Orders.GetNewCustomerOrdersAsync();
+            });
+        }
+
         public async Task<List<OrderSummaryDTO>> GetPendingOrdersAsync()
         {
             return await _busOp.Query(async (persistence) =>

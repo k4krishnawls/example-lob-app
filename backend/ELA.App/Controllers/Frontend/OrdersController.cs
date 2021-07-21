@@ -26,5 +26,12 @@ namespace ELA.App.Controllers.Frontend
             var orders = await _userQueries.GetPendingOrdersAsync();
             return Ok(orders);
         }
+
+        [HttpGet("newCustomers")]
+        public async Task<IActionResult> GetNewCustomerOrdersAsync()
+        {
+            var orders = await _userQueries.GetNewCustomerOrdersAsync();
+            return Ok(orders);
+        }
     }
 }

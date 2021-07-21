@@ -3,6 +3,7 @@ import { AttachMoney as Dollar, ShoppingCart } from "@material-ui/icons";
 import { CardWithIcon } from '~app/components/CardWithIcon';
 import { DailyRevenue, OrderSummary, ReviewSummary, } from "../../types";
 import { useFetch } from "../../utilities/useFetch";
+import { OrderSummaryList } from './_components/OrderSummaryList';
 
 export const DashboardPage: React.FunctionComponent = () => {
   const [revenueAmount, setRevenueAmount] = React.useState<number | undefined>(undefined);
@@ -80,7 +81,8 @@ export const DashboardPage: React.FunctionComponent = () => {
         chart
       </div>
       <div className="lob-section">
-        order list
+        <h2>Pending Orders</h2>
+        <OrderSummaryList orders={pendingOrders} />
       </div>
     </div>
   );

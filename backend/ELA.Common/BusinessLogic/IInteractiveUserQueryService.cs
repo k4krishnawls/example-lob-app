@@ -13,5 +13,6 @@ namespace ELA.Common.BusinessLogic
         Task<List<CustomerDTO>> GetAllCustomersAsync();
         Task<List<OrderSummaryDTO>> GetPendingOrdersAsync();
         Task<List<ReviewSummaryDTO>> GetPendingReviewsAsync();
+        Task<List<OrderSummaryDTO>> GetNewCustomerOrdersAsync();
     }
 }

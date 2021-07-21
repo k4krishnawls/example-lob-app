@@ -109,5 +109,53 @@ namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
             forThisTest.Should().HaveCount(3);
             forThisTest.Select(f => f.Id).Should().BeEquivalentTo(orders.Select(o => o.Id));
         }
+
+        [Test]
+        public async Task GetNewCustomerOrdersAsync_NewCustomer_ReturnsNewOrder()
+        {
+            var customer = Database.Customers.Add("Customer #3");
+            // we're assuming orders will be injected to DB in the order in this list
+            var rawOrders = new List<OrderDTO>() {
+                OrderBuilder.NewOrder("C3-0", DateTime.UtcNow.AddDays(-2), customer.Id)
+                    .AddLine(1, _products[0])
+                    .SetStatus(OrderStatus.Ordered)
+                    .RawOrder
+            };
+            var orders = Database.Orders.AddOrders(rawOrders);
+
+            var result = await _controller.GetNewCustomerOrdersAsync();
+
+            var resultList = AssertResponseIs<OkObjectResult, List<OrderSummaryDTO>>(result);
+            resultList.Count.Should().BeGreaterOrEqualTo(1);
+            var newCustomerOrders = resultList.Select(r => (OrderId: r.Id, CustomerId: r.Customer.Id)).ToList();
+            newCustomerOrders.Should().Contain((OrderId: orders[0].Id, CustomerId: customer.Id));
+        }
+
+        [Test]
+        public async Task GetNewCustomerOrdersAsync_NewCustomerWithTwoOrders_OnlyReturnsFirstNewOrder()
+        {
+            var customer = Database.Customers.Add("Customer #3");
+            // we're assuming orders will be injected to DB in the order in this list
+            var rawOrders = new List<OrderDTO>() {
+                OrderBuilder.NewOrder("C3-0", DateTime.UtcNow.AddDays(-2), customer.Id)
+                    .AddLine(1, _products[0])
+                    .SetStatus(OrderStatus.Ordered)
+                    .RawOrder,
+                OrderBuilder.NewOrder("C3-1", DateTime.UtcNow.AddDays(-1), customer.Id)
+                    .AddLine(1, _products[0])
+                    .SetStatus(OrderStatus.Processing)
+                    .RawOrder
+            };
+            var orders = Database.Orders.AddOrders(rawOrders);
+
+            var result = await _controller.GetNewCustomerOrdersAsync();
+
+            var resultList = AssertResponseIs<OkObjectResult, List<OrderSummaryDTO>>(result);
+            resultList.Count.Should().BeGreaterOrEqualTo(1);
+            var newCustomerOrders = resultList.Select(r => (OrderId: r.Id, CustomerId: r.Customer.Id)).ToList();
+            newCustomerOrders.Should().Contain((OrderId: orders[0].Id, CustomerId: customer.Id));
+            newCustomerOrders.Should().NotContain((OrderId: orders[1].Id, CustomerId: customer.Id));
+        }
+
     }
 }
