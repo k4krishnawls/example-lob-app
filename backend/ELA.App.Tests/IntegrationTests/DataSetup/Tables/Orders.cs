@@ -81,6 +81,7 @@ namespace ELA.App.Tests.IntegrationTests.DataSetup.Tables
             var builder = new OrderBuilder();
             builder.RawOrder.Reference = reference;
             builder.RawOrder.OrderDate = orderDate;
+            builder.RawOrder.OrderStatus = OrderStatus.Delivered;
             builder.RawOrder.CustomerId = customerId;
             builder.RawOrder.SubTotal = 0;
             builder.UpdateMath();

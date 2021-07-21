@@ -67,11 +67,17 @@ export type OrderSummary = {
   orderTotal: number;
 };
 
+export enum ReviewStatus {
+  Pending = 1,
+  Accepted = 2,
+  Rejected = 3
+}
 
 export type ReviewSummary = {
   reviewDate: Date;
   score: number;
   excerpt: string;
+  status: ReviewStatus;
   customer: {
     id: number;
     name: string;

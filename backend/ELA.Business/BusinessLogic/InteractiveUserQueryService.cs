@@ -1,6 +1,7 @@
 ﻿using ELA.Common.BusinessLogic;
 using ELA.Common.DTOs.Customer;
 using ELA.Common.DTOs.Order;
+using ELA.Common.DTOs.Review;
 using ELA.Common.Persistence;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,14 @@ namespace ELA.Business.BusinessLogic
             return await _busOp.Query(async (persistence) =>
             {
                 return await persistence.Orders.GetPendingOrdersAsync();
+            });
+        }
+
+        public async Task<List<ReviewSummaryDTO>> GetPendingReviewsAsync()
+        {
+            return await _busOp.Query(async (persistence) =>
+            {
+                return await persistence.Reviews.GetReviewSummariesByStatusAsync(ReviewStatus.Pending);
             });
         }
     }

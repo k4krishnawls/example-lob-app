@@ -18,12 +18,40 @@ namespace ELA.Persistence.Repositories
         public async Task<List<CustomerDTO>> GetAllAsync()
         {
             var sql = @"
-                SELECT Id, [Name]
-                FROM dbo.Customer;
+                SELECT C.Id, 
+                        C.[Name],
+                        C.Email,
+                        C.Avatar,
+                        C.NewsletterOptIn,
+                        CCGX.CustomerGroupId
+                FROM dbo.Customer C
+                    LEFT JOIN dbo.Customer_CustomerGroup_Xref CCGX ON CCGX.CustomerId = C.Id;
             ";
             using (var conn = GetConnection())
             {
-                return (await conn.QueryAsync<CustomerDTO>(sql)).ToList();
+                var customers = new Dictionary<int, CustomerDTO>();
+                var rawResults = (await conn.QueryAsync<CustomerDTO, int?, CustomerDTO>(
+                    sql,
+                    (c, g) =>
+                    {
+                        if (!customers.ContainsKey(c.Id))
+                        {
+                            c.CustomerGroupIds = new List<int>();
+                            customers.Add(c.Id, c);
+                        }
+                        else
+                        {
+                            c = customers[c.Id];
+                        }
+                        if (g.HasValue)
+                        {
+                            c.CustomerGroupIds.Add(g.Value);
+                        }
+                        return c;
+                    },
+                    splitOn: "CustomerGroupId"
+                )).ToList();
+                return customers.Values.ToList();
             }
         }
     }

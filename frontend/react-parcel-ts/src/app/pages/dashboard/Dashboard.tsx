@@ -40,6 +40,7 @@ export const DashboardPage: React.FunctionComponent = () => {
       id: r.id,
       reviewDate: new Date(r.reviewDate),
       review: r.review,
+      status: r.status,
       customer: {
         id: r.customer.id,
         name: r.customer.name,

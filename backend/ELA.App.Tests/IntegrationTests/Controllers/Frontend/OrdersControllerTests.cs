@@ -25,16 +25,6 @@ namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
         private List<CategoryDTO> _productCategories;
         private List<ProductDTO> _products;
 
-        // TBD
-        public static List<OrderStatus> GetPendingStatuses()
-        {
-            return new List<OrderStatus>() {
-                OrderStatus.Ordered,
-                OrderStatus.Processing,
-                OrderStatus.Delivering
-            };
-        }
-
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -64,50 +54,60 @@ namespace ELA.App.Tests.IntegrationTests.Controllers.Frontend
             };
         }
 
-        [Test]
-        public async Task GetPendingOrdersAsync_NoRecentOrders_ReturnsEmptySet()
+        [TestCase(OrderStatus.Ordered, true, TestName = "GetPendingOrdersAsync_OrderedStatus_IsIncludedInPending")]
+        [TestCase(OrderStatus.Processing, true, TestName = "GetPendingOrdersAsync_ProcessingStatus_IsIncludedInPending")]
+        [TestCase(OrderStatus.Delivering, true, TestName = "GetPendingOrdersAsync_DeliveringStatus_IsIncludedInPending")]
+        [TestCase(OrderStatus.Delivered, false, TestName = "GetPendingOrdersAsync_DeliveredStatus_IsExcludedFromPending")]
+        [TestCase(OrderStatus.Cancelled, false, TestName = "GetPendingOrdersAsync_CancelledStatus_IsExcludedFromPending")]
+        public async Task GetPendingOrdersAsync_OrderInGivenStatus_MayOrMayNotBeIncluded(OrderStatus status, bool shouldBeIncluded)
         {
-            // no setup
+            var customer = Database.Customers.Add("Customer #1");
+            var rawOrder = OrderBuilder.NewOrder("C1-0", DateTime.UtcNow, customer.Id)
+                    .AddLine(1, _products[0])
+                    .SetStatus(status);
+            var order = Database.Orders.AddOrder(rawOrder.RawOrder);
 
             var result = await _controller.GetPendingOrdersAsync();
 
             var resultList = AssertResponseIs<OkObjectResult, List<OrderSummaryDTO>>(result);
-            resultList.Should().HaveCount(0);
+            if (shouldBeIncluded)
+            {
+                resultList.Count.Should().BeGreaterOrEqualTo(1);
+                resultList.Select(r => r.Id).Should().Contain(order.Id);
+            }
+            else
+            {
+                resultList.Select(r => r.Id).Should().NotContain(order.Id);
+            }
         }
 
         [Test]
-        public async Task GetPendingOrdersAsync_MixOfPendingAndDeliveredOrders_ReturnsOnlyPendingOrders()
+        public async Task GetPendingOrdersAsync_MultiplePendingOrders_WillAllBeIncluded()
         {
-            var customers = new List<CustomerDTO>(){
-                Database.Customers.Add("Customer #1"),
-                Database.Customers.Add("Customer #2"),
-                Database.Customers.Add("Customer #3"),
+            var customer = Database.Customers.Add("Customer #2");
+            var rawOrders = new List<OrderDTO>() {
+                OrderBuilder.NewOrder("C2-0", DateTime.UtcNow, customer.Id)
+                    .AddLine(1, _products[0])
+                    .SetStatus(OrderStatus.Ordered)
+                    .RawOrder,
+                OrderBuilder.NewOrder("C2-1", DateTime.UtcNow, customer.Id)
+                    .AddLine(1, _products[0])
+                    .SetStatus(OrderStatus.Processing)
+                    .RawOrder,
+                OrderBuilder.NewOrder("C2-2", DateTime.UtcNow, customer.Id)
+                    .AddLine(1, _products[0])
+                    .SetStatus(OrderStatus.Delivering)
+                    .RawOrder
             };
-            var rawOrders = new List<OrderBuilder>() {
-                OrderBuilder.NewOrder("C0-0", DateTime.UtcNow, customers[0].Id)
-                    .AddLine(1, _products[0])
-                    .SetStatus(OrderStatus.Ordered),
-                OrderBuilder.NewOrder("C1-0", DateTime.UtcNow, customers[1].Id)
-                    .AddLine(1, _products[0])
-                    .SetStatus(OrderStatus.Processing),
-                OrderBuilder.NewOrder("C2-0", DateTime.UtcNow, customers[2].Id)
-                    .AddLine(1, _products[0])
-                    .SetStatus(OrderStatus.Delivering),
-                OrderBuilder.NewOrder("C0-1", DateTime.UtcNow, customers[0].Id)
-                    .AddLine(1, _products[0])
-                    .SetStatus(OrderStatus.Delivered),
-                OrderBuilder.NewOrder("C0-2", DateTime.UtcNow, customers[0].Id)
-                    .AddLine(1, _products[0])
-                    .SetStatus(OrderStatus.Cancelled)
-            };
-            var orders = Database.Orders.AddOrders(rawOrders.Select(ro => ro.RawOrder));
+            var orders = Database.Orders.AddOrders(rawOrders);
 
             var result = await _controller.GetPendingOrdersAsync();
 
             var resultList = AssertResponseIs<OkObjectResult, List<OrderSummaryDTO>>(result);
-            resultList.Should().HaveCount(3);
-            var pendingIds = orders.Where(o => GetPendingStatuses().Contains(o.OrderStatus)).Select(o => o.Id);
-            resultList.Select(r => r.Id).Should().BeEquivalentTo(pendingIds);
+            resultList.Count.Should().BeGreaterOrEqualTo(3);
+            var forThisTest = resultList.Where(r => r.Customer.Id == customer.Id).ToList();
+            forThisTest.Should().HaveCount(3);
+            forThisTest.Select(f => f.Id).Should().BeEquivalentTo(orders.Select(o => o.Id));
         }
     }
 }

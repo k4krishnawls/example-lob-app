@@ -25,6 +25,7 @@ namespace ELA.App.Tests.IntegrationTests.DataSetup
             Products = new Products(this);
             ProductCategories = new ProductCategories(this);
             ProductTypes = new ProductTypes(this);
+            Reviews = new Reviews(this);
             Users = new Users(this);
         }
 
@@ -34,6 +35,7 @@ namespace ELA.App.Tests.IntegrationTests.DataSetup
         public Products Products { get; }
         public ProductTypes ProductTypes { get; }
         public ProductCategories ProductCategories { get; }
+        public Reviews Reviews { get; }
         public Users Users { get; }
 
 

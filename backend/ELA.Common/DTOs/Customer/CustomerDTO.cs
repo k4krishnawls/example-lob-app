@@ -6,6 +6,11 @@ namespace ELA.Common.DTOs.Customer
 {
     public class CustomerDTO
     {
+        public CustomerDTO()
+        {
+            CustomerGroupIds = new List<int>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
