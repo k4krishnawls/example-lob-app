@@ -19,7 +19,7 @@
     color: $text-color-inverse;
 
     & > th {
-      background-color: $sec-blue;
+      background-color: $sec-accent-blue;
       font-weight: normal;
       font-size: 80%;
     }
@@ -34,7 +34,7 @@
   }
 
   & > tfoot > tr > td {
-    border-bottom: 1px solid $grey-lt;
+    border-bottom: 1px solid $border-color;
 
     &:first-child{
       border-bottom-left-radius: 4px;
@@ -45,6 +45,6 @@
   }
 
   & > tbody > tr:nth-child(2n+1){
-    background-color: $grey-lt;
+    background-color: $grey-1;
   }
 }

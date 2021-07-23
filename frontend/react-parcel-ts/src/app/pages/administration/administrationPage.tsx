@@ -1,8 +1,7 @@
 import React from 'react';
-import { Section } from "../../components/section";
-import { ProductType, User } from "../../types";
+import { Section } from "../../components/Section";
+import { User } from "../../types";
 import { useFetch } from "../../utilities/useFetch";
-import { ProductTypeTable } from './_components/ProductTypeTable';
 import { UserTable } from './_components/UserTable';
 
 export const AdministrationPage: React.FunctionComponent = () => {
@@ -16,23 +15,11 @@ export const AdministrationPage: React.FunctionComponent = () => {
     }));
   });
 
-  const productTypes = useFetch<ProductType[]>("/api/fe/products/types", (rd: any) => {
-    return rd.map((ru: any) => ({
-      id: ru.id,
-      displayName: ru.displayName,
-      updatedOn: new Date(ru.updatedOn)
-    }));
-  });
-
   return (
     <>
       <Section>
         <h1>Users</h1>
         <UserTable users={users} />
-      </Section>
-      <Section>
-        <h1>ProductTypes</h1>
-        <ProductTypeTable productTypes={productTypes} />
       </Section>
     </>
   );

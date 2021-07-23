@@ -7,9 +7,9 @@ const formatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
-type Props = {
+interface IProps {
   number: number;
-};
+}
 
-export const CurrencySpan: React.FunctionComponent<Props> = (props: Props) =>
+export const CurrencySpan: React.FunctionComponent<IProps> = (props: IProps) =>
   <span className="lob-span-currency">{formatter.format(props.number)}</span>;

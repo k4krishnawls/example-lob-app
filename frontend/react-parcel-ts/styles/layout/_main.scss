@@ -2,23 +2,49 @@
 
 .app-body {
   display: grid;
-  grid-template-columns:  [start] 200px [content-start] auto [end];
-  grid-template-rows:  [top] $space-l [content-top] auto [bottom];
+  grid-template-columns:  [start] 220px [content-start] auto [end];
+  grid-template-rows:  [top] $space-xl [content-top] auto [bottom];
   height: 100vh;
   width: 100vw;
   overflow: auto;
+  background-color: $background-color-light;
 }
 
 .app-header{
-  line-height: $space-l;
+  grid-column-start: start;
+  grid-column-end: end;
+  grid-row-start: top;
+  grid-row-end: content-top;
+  line-height: $space-xl;
+  border: 1px solid $border-color;
+
+  display: flex;
+  flex-direction: row;
+  & > .app-header-toggle {
+    width: $space-xl;
+    flex: 0 0;
+    padding: 0 $space-m;
+  }
+  & > .app-header-title {
+    flex: 1 0;
+    text-align: center;
+    padding: 0 $space-m;
+    color: $pri-accent;
+    font-size: 2rem;
+    font-style: italic;
+  }
+  & > .app-header-menu {
+    flex: 0 0;
+    white-space: nowrap;
+    padding: 0 $space-m;
+  }
 }
 
 .app-menu {
   grid-column-start: start;
   grid-column-end: content-start;
-  grid-row-start: top;
-  grid-row-end: content-start;
-  background-color: $background-color-white;
+  grid-row-start: content-top;
+  grid-row-end: bottom;
   padding-top: $space-l;
 
   & > ul {
@@ -33,17 +59,23 @@
   padding: .5rem 1rem;
   margin: .25rem 0;
   border-left: 4px solid transparent;
+  text-decoration: none;
+  color: $sec-accent-blue;
 
   &.selected{
-    background: $menu-gradient;
-    border-left: 4px solid $pri-blue;
+    color: $pri-accent;
+    font-weight: bold;
+    border-left: 4px solid $pri-accent;
+    border-top-right-radius: $rounded-corners-radius;
+    border-bottom-right-radius: $rounded-corners-radius;
   }
 
   &:hover,
   &:active,
   &:focus {
-    background: $menu-gradient-end;
-    // border-left: 4px solid $sec-grey;
+    color: $pri-accent;
+    border-left: 4px solid $sec-accent-blue;
+    background-color: white;
     text-decoration: none;
   }
 }
@@ -61,5 +93,4 @@
   border: 1px solid $border-color;
   border-radius: 4px;
   padding: 1rem;
-  background-color: $background-color-white;
 }

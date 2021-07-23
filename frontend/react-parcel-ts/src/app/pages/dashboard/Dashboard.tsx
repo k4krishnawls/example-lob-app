@@ -1,5 +1,5 @@
 import React from 'react';
-import { AttachMoney as Dollar, ShoppingCart } from "@material-ui/icons";
+import { AttachMoney as Dollar, ShoppingCart, Person, Comment } from "@material-ui/icons";
 import { CardWithIcon } from '~app/components/CardWithIcon';
 import { DailyRevenue, OrderSummary, ReviewSummary, } from "../../types";
 import { useFetch } from "../../utilities/useFetch";
@@ -73,16 +73,25 @@ export const DashboardPage: React.FunctionComponent = () => {
     ? "loading..."
     : pendingOrderCount.toLocaleString("en-US", { style: 'decimal', maximumFractionDigits: 0 });
 
+  // note: this layout is designed to match the react-admin one, though the responsiveness is going to be less borked
   return (
     <div className="lob-dashboard">
-      <CardWithIcon icon={Dollar} title="Monthly Revenue" subtitle={revenueSummary} to={"/orders"} />
-      <CardWithIcon icon={ShoppingCart} title="Pending Orders" subtitle={orderCountSummary} to={"/orders"} />
-      <div className="lob-section">
-        chart
+      <div className="lob-dashboard-orders">
+        <div className="lob-dashboard-orders-5050">
+          <CardWithIcon icon={Dollar} title="Monthly Revenue" subtitle={revenueSummary} to={"/orders"} />
+          <CardWithIcon icon={ShoppingCart} title="Pending Orders" subtitle={orderCountSummary} to={"/orders"} />
+        </div>
+        <div className="lob-section">
+          chart
+        </div>
+        <div className="lob-section">
+          <h2>Pending Orders</h2>
+          <OrderSummaryList orders={pendingOrders} />
+        </div>
       </div>
-      <div className="lob-section">
-        <h2>Pending Orders</h2>
-        <OrderSummaryList orders={pendingOrders} />
+      <div className="lob-dashboard-other">
+        <CardWithIcon icon={Comment} title="Pending Reviews" subtitle={"TBD"} to={"/reviews"} />
+        <CardWithIcon icon={Person} title="New Customers" subtitle={"TBD"} to={"/customers"} />
       </div>
     </div>
   );

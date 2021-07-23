@@ -45,7 +45,7 @@
 }
 
 .lob-logo {
-  color: $grey-med;
+  color: $grey-1;
   text-decoration: none;
   margin: 0;
   height: 36px;
@@ -59,7 +59,7 @@
 }
 
 .lob-logo.lob-logo-name {
-  border-left: 3px solid $pri-blue;
+  border-left: 3px solid $pri-accent  ;
   line-height: 56px;
   height: 52px;
   margin: 2px 0.75rem;
@@ -80,12 +80,12 @@
   .lob-floating-box > h1 {
       font-size: 2.5rem;
       margin-top: 0;
-      color: $pri-blue;
+      color: $pri-accent;
   }
 
 .lob-err-message {
   text-align: center;
-  color: $sec-pink;
+  color: $sec-accent-pink;
 }
 
 .lob-floating-box {
@@ -103,14 +103,14 @@ form {
   font-size: 0.952rem; /* $font-size-small */
   margin: 16px 0 8px 0; /* $space-m 0 $space-s 0 */
   width: 100%;
-  color: $pri-blue;
+  color: $pri-accent;
 }
 
 input[type=text],
 input[type=password] {
   width: 100%;
   box-sizing: border-box;
-  border-color: $pri-blue;
+  border-color: $sec-accent-blue;
 }
 
 .lob-sublink {

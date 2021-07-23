@@ -34,16 +34,16 @@ h5, .h5 {
 }
 
 a, a:visited{
-  color: $sec-blue;
+  color: $pri-accent;
   text-decoration: underline;
 }
 a:hover{
-  color: darken($sec-blue, 10%);
+  color: $p-blue-6;
   text-decoration: none;
 }
 a.disabled{
   cursor: pointer;
-  color: $grey-med;
+  color: $grey-1;
   text-decoration: none;
   pointer-events: none;
 }
@@ -51,7 +51,7 @@ a.disabled{
 input[type=text],
 input[type=password],
 select {
-  border: 1px solid $grey-med;
+  border: 1px solid $grey-1;
   border-radius: 2px;
   padding: $space-xs;
   @include standard-font;
@@ -62,7 +62,7 @@ select {
 
   &:active,
   &:focus {
-    border: 1px solid $sec-blue;
+    border: 1px solid $sec-accent-blue;
     outline: none;
   }
 }

@@ -2,7 +2,7 @@ import * as React from "react";
 
 export const Section: React.FunctionComponent = (props) => {
   return (
-    <div className="app-section">
+    <div className="lob-section">
       {props.children}
     </div>
   );

@@ -6,11 +6,11 @@ import { UserDateSpan } from '~app/components/inputs/UserDateSpan';
 import { OrderSummary } from '~app/types';
 import { Response } from '~app/utilities/useFetch';
 
-type Props = {
+interface IProps {
   orders: Response<OrderSummary[]>;
-};
+}
 
-export const OrderSummaryList: React.FunctionComponent<Props> = (props: Props) => {
+export const OrderSummaryList: React.FunctionComponent<IProps> = (props: IProps) => {
   const { orders } = props;
 
   if (orders.isLoading) {

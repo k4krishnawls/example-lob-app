@@ -1,0 +1,49 @@
+@import "../variables";
+
+.lob-dashboard {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: $breakpoint-large-desktop) {
+    flex-direction: row;
+  }
+}
+
+.lob-dashboard-orders{
+  flex: 1 0;
+
+  & > .lob-dashboard-orders-5050 {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    margin: $space-s 0 $space-s $space-s;
+
+    & > .lob-card {
+      flex: 1 0;
+      margin: 0 $space-s 0 0;
+    }
+  }
+
+  & > .lob-section {
+    margin: $space-s;
+  }
+}
+
+.lob-dashboard-other {
+  display: flex;
+  margin: 0 0 0 $space-s;
+  min-width: 35rem;   // not crazy about this, may remove or swap to something better once I have content
+  flex-direction: column-reverse;
+
+  & > .lob-card {
+    flex: 1 0;
+    // container takes care of optional left/top margins
+    margin: 0 $space-s $space-s 0;
+  }
+
+  @media (min-width: $breakpoint-large-desktop) {
+    flex-direction: row;
+    margin: $space-s 0 0 0;
+  }
+}
+

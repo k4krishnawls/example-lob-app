@@ -33,13 +33,6 @@ export enum UserType {
   SystemUser = 2
 }
 
-export interface ProductType {
-  id: number;
-  displayName: string;
-  updatedOn: Date;
-}
-
-
 
 
 export type DailyRevenue = {

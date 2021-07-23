@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { AnimateOnChange } from 'react-animation';
 import { Button } from '~app/components/button';
-import { ButtonGroup } from '~app/components/buttonGroup';
+import { ButtonGroup } from '~app/components/ButtonGroup';
 import { BadRequestType, parseBadRequestResponse } from '~app/utilities/badRequest';
-import { Section } from "../../components/section";
+import { Section } from "../../components/Section";
 import {
   User,
   Loadable,

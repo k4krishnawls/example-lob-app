@@ -17,7 +17,7 @@
   }
 
   &:focus-within {
-    outline: dotted $sec-green;
+    outline: dotted $sec-accent-green;
   }
 }
 a.lob-button{
@@ -27,18 +27,18 @@ a.lob-button{
 
 .lob-bs-primary,
 a.lob-bs-primary {
-  background: $sec-blue;
+  background: $sec-accent-blue;
   background: $blue-gradient;
   color: $text-color-inverse;
 
   &:hover {
-    background: $sec-blue-dark;
+    background: $blue-gradient-dark-start;
     background: $blue-gradient-dark;
     color: $text-color-inverse;
   }
 
   &:active {
-    background: $sec-blue-dark;
+    background: $blue-gradient-dark-start;
     background: $blue-gradient-dark;
     color: $text-color-inverse;
   }
@@ -46,8 +46,8 @@ a.lob-bs-primary {
   &[disabled],
   &[disabled]:hover,
   &[disabled]:active {
-    background: $grey-lt;
-    color: $grey-med;
+    background: $grey-1;
+    color: $grey-3;
     box-shadow: none;
     cursor: default;
   }
@@ -55,24 +55,24 @@ a.lob-bs-primary {
 
 .lob-bs-secondary,
 a.lob-bs-secondary {
-  background: $grey-lt;
-  color: $pri-blue;
+  background: $grey-1;
+  color: $pri-accent;
 
   &:hover {
-    background: $sec-blue;
+    background: $sec-accent-blue;
     color: $text-color-inverse;
   }
 
   &:active {
-    background: $sec-blue;
+    background: $sec-accent-blue;
     color: $text-color-inverse;
   }
 
   &[disabled],
   &[disabled]:hover,
   &[disabled]:active {
-    background: $grey-lt;
-    color: $grey-med;
+    background: $grey-1;
+    color: $grey-3;
     box-shadow: none;
     cursor: default;
   }

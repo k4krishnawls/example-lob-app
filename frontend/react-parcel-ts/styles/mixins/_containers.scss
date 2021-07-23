@@ -1,0 +1,9 @@
+@import "../variables";
+
+@mixin container {
+  display: block;
+  border: 1px solid $border-color;
+  border-radius: $rounded-corners-radius;
+  background-color: $white;
+  padding: $space-m;
+}

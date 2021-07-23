@@ -1,37 +1,72 @@
 
-// colors
-$pri-blue: #024B7E;
-$sec-pink: #BE2553;
-$sec-pink-light: lighten(#BE2553, 50%);
-$sec-pink-dark: darken(#BE2553, 20%);
-$sec-green: #4F9359;
-$sec-blue: #487A9D;
-$sec-blue-dark: darken($sec-blue, 10%);
 
-$blue-gradient-start: #054D80;
-$blue-gradient-end: #29658F;
-$blue-gradient: linear-gradient(180deg, $blue-gradient-start 0%, $blue-gradient-end 100%);
-$blue-gradient-dark: linear-gradient(180deg, $pri-blue 0%, $blue-gradient-start 100%);
-$menu-gradient-start: #E4EBF1;
-$menu-gradient-end: #F4F7F9;
-$menu-gradient: linear-gradient(90deg, $menu-gradient-start 0%, $menu-gradient-end 100%);
-$grey-lt: #EFF0F2;
-$grey-med: #57636F;
-$black: #020202;
-$white: #fff;
+// pri blue: https://mdigi.tools/color-shades/#024b7e
+$p-blue-0: #dbf0fe;
+$p-blue-1: #93d2fd;
+$p-blue-2: #4cb4fc;
+$p-blue-3: #0495fb;
+$p-blue-4: #036bb3;
+$p-blue-5: #02406c;
+$p-blue-6: #011524;
+
+// sec blue:
+$s-blue-0: #e6eef4;
+$s-blue-1: #b4ccdd;
+$s-blue-2: #82aac6;
+$s-blue-3: #5088af;
+$s-blue-4: #39617d;
+$s-blue-5: #223a4b;
+$s-blue-6: #0b1319;
+
+// pink: https://mdigi.tools/color-shades/#be2553
+$s-pink-0: #f9e0e8;
+$s-pink-1: #eda4ba;
+$s-pink-2: #e1678b;
+$s-pink-3: #d52a5d;
+$s-pink-4: #981e43;
+$s-pink-5: #5b1228;
+$s-pink-6: #1e060d;
+
+// green: https://mdigi.tools/color-shades/#4f9359
+$s-green-0: #e7f2e9;
+$s-green-1: #b8d9bd;
+$s-green-2: #89bf91;
+$s-green-3: #59a664;
+$s-green-4: #407648;
+$s-green-5: #26472b;
+$s-green-6: #0d180e;
+
+// grey: https://mdigi.tools/color-shades/#57636f - 10
+$grey-0: #f1f2f4;
+$grey-1: #d4d9dd;
+$grey-2: #b8bfc7;
+$grey-3: #9ba6b1;
+$grey-4: #7e8c9a;
+$grey-5: #657381;
+$grey-6: #4e5964;
+$grey-7: #384048;
+$grey-8: #22262b;
+$grey-9: #0b0d0e;
+
+// quick aliases
+$white: #FFF;
+$black: $grey-8;
+$pri-accent: $p-blue-5;
+$sec-accent-pink: $s-pink-3;
+$sec-accent-green: $s-green-3;
+$sec-accent-blue: $s-blue-3;
+$blue-gradient-start: $s-blue-5;
+$blue-gradient: linear-gradient(180deg, $blue-gradient-start 0%, $s-blue-4 100%);
+$blue-gradient-dark-start: $s-blue-5;
+$blue-gradient-dark: linear-gradient(180deg, $blue-gradient-dark-start 0%, $s-blue-4 100%);
 
 // default colors
 $text-color-default: $black;
 $text-color-inverse: $white;
 $background-color-white: $white;
-$background-color-light: $grey-lt;
-
-$menu-bg: #222244;
-$menu-item-bg: #222244;
-$menu-item-fg: #ffffff;
-$menu-item-hover-bg: #333366;
-$menu-item-hover-fg: #ffffff;
-$border-color: #DDD;
+$background-color-light: $grey-0;
+$border-color: $grey-1;
+$border-standard: 1px solid $grey-1;
 
 // fonts
 $font-family: 'Raleway', 'Open Sans', sans-serif;
@@ -44,12 +79,18 @@ $font-size-larger: 1.2rem;
 
 $line-height-base: 1.5rem;
 
+// media dimensions
+$breakpoint-large-desktop: 1280px;
+
 // spacing
 $space-xs: 4px;
 $space-s: 8px;
 $space-m: 16px;
 $space-l: 32px;
 $space-xl: 64px;
+
+// corners
+$rounded-corners-radius: 0.5rem;
 
 // misc
 $shadow-main: rgba(0, 0, 0, 0.3) 0px 1px 2px 0px,

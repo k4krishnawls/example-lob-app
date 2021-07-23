@@ -9,9 +9,9 @@ function formatDate(date: Date) {
   });
 }
 
-type Props = {
+interface IProps {
   date: Date;
-};
+}
 
-export const UserDateSpan: React.FunctionComponent<Props> = (props: Props) =>
+export const UserDateSpan: React.FunctionComponent<IProps> = (props: IProps) =>
   <span className="lob-span-quantity">{formatDate(props.date)}</span>;
