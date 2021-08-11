@@ -106,14 +106,16 @@ jobs:
           name: terraform plan
           command: |
             cd infrastructure
-            echo '----- INIT'
             terraform init
-            echo '----- PLAN'
-            terraform plan -detailed-exitcode -out=tfplan -var 'sql-login=${SQL_ADMIN_LOGIN}' -var 'sql-password=${SQL_ADMIN_PASSWORD}' -var 'sql-threat-email=${SQL_THREAT_EMAIL}'
-            PLAN_RESULT=$?
-            echo '----- PLAN RESULT'
-            echo 'PLAN RESULT: $PLAN_RESULT'
-            echo '----- VARS'
+            terraform plan -out=tfplan -var 'sql-login=${SQL_ADMIN_LOGIN}' -var 'sql-password=${SQL_ADMIN_PASSWORD}' -var 'sql-threat-email=${SQL_THREAT_EMAIL}'
+            
+            if terraform show plan.out | grep -q " 0 to add, 0 to change, 0 to destroy"; then 
+              echo "No changes, infrastructure is up to date";
+            else 
+              echo "Tarraform plan requires changes to be applied, cannot continue";
+              exit 1
+            fi
+
             echo $(terraform output resource_group_name) > ../tf-resource-group-name
             echo $(terraform output app_name) > ../tf-app-name
             echo $(terraform output app_staging_url) > ../tf-app-staging-url
