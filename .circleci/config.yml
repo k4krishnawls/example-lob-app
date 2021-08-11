@@ -149,10 +149,14 @@ jobs:
           name: import terraform outputs
           command: |
             cd /tmp/workspace
-            echo 'export AZURE_RG_NAME=$(cat tf-resource-group-name)' >> $BASH_ENV
-            echo 'export AZURE_APP_NAME=$(cat tf-app-name)' >> $BASH_ENV
-            echo 'export AZURE_APP_STAGING_URL=$(cat tf-app-staging-url)' >> $BASH_ENV
-            echo 'export DB_SERVER_NAME=$(cat tf-db-server-name)' >> $BASH_ENV
+            $tf-resource-group-name=$(cat tf-resource-group-name)
+            $tf-app-name=$(cat tf-app-name)
+            $tf-app-staging-url=$(cat tf-app-staging-url)
+            $tf-db-server-name=$(cat tf-db-server-name)
+            echo "export AZURE_RG_NAME=$tf-resource-group-name" >> $BASH_ENV
+            echo "export AZURE_APP_NAME=$tf-app-name" >> $BASH_ENV
+            echo "export AZURE_APP_STAGING_URL=$tf-app-staging-url" >> $BASH_ENV
+            echo "export DB_SERVER_NAME=$tf-db-server-name" >> $BASH_ENV
             source $BASH_ENV
 
       - run:
@@ -167,7 +171,8 @@ jobs:
       - run:
           name: Capture public IP
           command: |
-            echo 'export PUBLIC_IP=$(curl -s https://api.ipify.org)' >> $BASH_ENV
+            $public-ip=$(curl -s https://api.ipify.org)
+            echo "export PUBLIC_IP=$public-ip" >> $BASH_ENV
             source $BASH_ENV
 
       - run:
