@@ -93,6 +93,13 @@ jobs:
       - image: zenika/terraform-azure-cli:latest
     steps:
       - checkout
+
+      - run:
+          name: Install Build/System Dependencies
+          command: |
+            apt-get update -yq \
+              && apt-get install curl gnupg -yq 
+
       - run:
           name: prepare terraform env vars
           command: |
