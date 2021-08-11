@@ -171,8 +171,8 @@ jobs:
       - run:
           name: Capture public IP
           command: |
-            $public-ip=$(curl -s https://api.ipify.org)
-            echo "export PUBLIC_IP=$public-ip" >> $BASH_ENV
+            public_ip=$(curl -s https://api.ipify.org)
+            echo "export PUBLIC_IP=$public_ip" >> $BASH_ENV
             source $BASH_ENV
 
       - run:
