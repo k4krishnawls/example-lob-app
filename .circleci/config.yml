@@ -67,7 +67,6 @@ jobs:
             export PATH="$PATH:/root/.dotnet/tools"
             trx2junit ~/reports/*.trx
 
-
       - store_test_results:
           path: ~/reports
       - store_artifacts:
@@ -98,6 +97,36 @@ jobs:
           webhook: "${DISCORD_STATUS_WEBHOOK}"
           mentions: "@employees"
 
+  terraform-plan:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+        name: prepare terraform env vars
+        command: 
+          |
+          echo 'export ARM_SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"' >> $BASH_ENV
+          echo 'export ARM_TENANT_ID="${AZURE_TENANT}"' >> $BASH_ENV
+          echo 'export ARM_CLIENT_ID="${AZURE_SP_APPID}"' >> $BASH_ENV
+          echo 'export ARM_CLIENT_SECRET="${AZURE_SP_PASSWORD}"' >> $BASH_ENV
+          source $BASH_ENV
+
+      - run: 
+        name: terraform plan
+        command:
+          |
+          terraform plan -detailed-exitcode -out=tfplan -var sql-login="${SQL_ADMIN_LOGIN}" -var sql-password="${SQL_ADMIN_PASSWORD}" -var sql-threat-email="${SQL_THREAT_EMAIL}"
+          echo $(terraform output resource_group_name) > tf-resource-group-name
+          echo $(terraform output app_name) > tf-app-name
+          echo $(terraform output app_staging_url) > tf-app-staging-url
+          echo $(terraform output db_server_name) > tf-db-server-name
+
+      - persist_to_workspace: # store the built files into the workspace for other jobs.
+          root: ./
+          paths:
+            - "tf-*"
+
   deploy-application:
     docker:
       - image: microsoft/azure-cli:latest
@@ -106,6 +135,16 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
+
+      - run:
+        name: import terraform outputs
+        command: 
+          |
+          echo 'export AZURE_RG_NAME=$(cat tf-resource-group-name)' >> $BASH_ENV
+          echo 'export AZURE_APP_NAME=$(cat tf-app-name)' >> $BASH_ENV
+          echo 'export AZURE_APP_STAGING_URL=$(cat tf-app-staging-url)' >> $BASH_ENV
+          echo 'export DB_SERVER_NAME=$(cat tf-db-server-name)' >> $BASH_ENV
+          source $BASH_ENV
 
       - run: 
           name: Install Dependencies
@@ -116,7 +155,14 @@ jobs:
             ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
             # dependencies for monitoring health checkout
             apk add nodejs           
-          
+      
+      - run:
+        name: Capture public IP
+        command:
+            |
+            exho 'export PUBLIC_IP=$(curl -s https://api.ipify.org)' >> $BASH_ENV
+            source $BASH_ENV
+
       - run: 
           name: Azure Staging Deploy
           command:
@@ -124,9 +170,9 @@ jobs:
             cd /tmp/workspace
             ls -l
             # Deploy to staging slot
-            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
-            az webapp deployment source config-zip -g ${AzureResourceGroup} -n ${AzureWebApp} -s staging --src app-publish.zip
-            az webapp start -g ${AzureResourceGroup} -n ${AzureWebApp} -s staging
+            az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT_ID}
+            az webapp deployment source config-zip -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --src app-publish.zip
+            az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging
             # Poll health endpoint, 500ms intervals, 15s timeout
             cd /tmp/workspace/tools/PollHealthcheck
             node index.js ${AzureStagingUrl}/health 500 15000
@@ -135,10 +181,9 @@ jobs:
           name: Database Migration
           command: 
             |
-            ip=$(curl -s https://api.ipify.org)
-            echo "Adding firewall rule for: $ip"
-            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
-            az sql server firewall-rule create --subscription ${AzureSubscription} -s ${AzureSqlServerName} -g ${AzureResourceGroup} -n CircleCI-Job-$CIRCLE_JOB --start-ip-address $ip --end-ip-address $ip
+            echo "Adding firewall rule for: ${PUBLIC_IP}"
+            az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT_ID}
+            az sql server firewall-rule create --subscription ${AZURE_SUBSCRIPTION_ID} -s ${DB_SERVER_NAME} -g ${AZURE_RG_NAME} -n CircleCI-Job-$CIRCLE_JOB --start-ip-address $ip --end-ip-address $ip
             cd /tmp/workspace/app-migrate
             ./ELA.Tools.DatabaseMigration --ConnectionString "${AzureDatabaseConnectionString}"
 
@@ -146,10 +191,9 @@ jobs:
           name: Database Migration - Firewall Cleanup
           command: 
             |
-            ip=$(curl -s https://api.ipify.org)
-            echo "Removing firewall rule for: $ip"
-            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
-            az sql server firewall-rule delete --subscription ${AzureSubscription} -s ${AzureSqlServerName} -g ${AzureResourceGroup} -n CircleCI-Job-$CIRCLE_JOB
+            echo "Removing firewall rule for: ${PUBLIC_IP}"
+            az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT_ID}
+            az sql server firewall-rule delete --subscription ${AZURE_SUBSCRIPTION_ID} -s ${DB_SERVER_NAME} -g ${AZURE_RG_NAME} -n CircleCI-Job-$CIRCLE_JOB
           when: always
 
       - run: 
@@ -158,13 +202,12 @@ jobs:
             |
             # Poll health endpoint, 500ms intervals, 15s timeout
             cd /tmp/workspace/tools/PollHealthcheck
-            node index.js ${AzureStagingUrl}/health 500 15000
+            node index.js https://${AZURE_APP_STAGING_URL}/health 500 15000
             # Swap into production
-            az login --service-principal -u http://${AzureServicePrincipal} -p ${AzurePassword} --tenant ${AzureTenant}
-            az webapp deployment slot swap -g ${AzureResourceGroup} -n  ${AzureWebApp} -s staging --target-slot production
+            az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT_ID}
+            az webapp deployment slot swap -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --target-slot production
             # Shutdown old version
-            az webapp stop -g ${AzureResourceGroup} -n ${AzureWebApp} -s staging
-
+            az webapp stop -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging
 
       - discord/status:
           fail_only: true
@@ -181,9 +224,14 @@ workflows:
   build_and_deploy:
     jobs:
       - build-application
+      - terraform-plan
+          filters: 
+            branches:
+              only: main
       - deploy-application:
           requires:
             - build-application
+            - terraform-plan
           filters: 
             branches:
               only: main
