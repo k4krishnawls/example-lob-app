@@ -93,13 +93,6 @@ jobs:
       - image: zenika/terraform-azure-cli:latest
     steps:
       - checkout
-
-      - run:
-          name: Install Build/System Dependencies
-          command: |
-            apt-get update -yq \
-              && apt-get install curl gnupg -yq 
-
       - run:
           name: prepare terraform env vars
           command: |
@@ -137,11 +130,11 @@ jobs:
           paths:
             - "tf-*"
 
-      - discord/status:
-          fail_only: true
-          failure_message: "Application: **$CIRCLE_JOB** job has failed!"
-          webhook: "${DISCORD_STATUS_WEBHOOK}"
-          mentions: "@employees"
+      # - discord/status:
+      #     fail_only: true
+      #     failure_message: "Application: **$CIRCLE_JOB** job has failed!"
+      #     webhook: "${DISCORD_STATUS_WEBHOOK}"
+      #     mentions: "@employees"
 
   deploy-application:
     docker:
