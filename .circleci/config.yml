@@ -100,24 +100,24 @@ jobs:
     steps:
       - checkout
       - run:
-        name: prepare terraform env vars
-        command: 
-          |
-          echo 'export ARM_SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"' >> $BASH_ENV
-          echo 'export ARM_TENANT_ID="${AZURE_TENANT}"' >> $BASH_ENV
-          echo 'export ARM_CLIENT_ID="${AZURE_SP_APPID}"' >> $BASH_ENV
-          echo 'export ARM_CLIENT_SECRET="${AZURE_SP_PASSWORD}"' >> $BASH_ENV
-          source $BASH_ENV
+          name: prepare terraform env vars
+          command: 
+            |
+            echo 'export ARM_SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"' >> $BASH_ENV
+            echo 'export ARM_TENANT_ID="${AZURE_TENANT}"' >> $BASH_ENV
+            echo 'export ARM_CLIENT_ID="${AZURE_SP_APPID}"' >> $BASH_ENV
+            echo 'export ARM_CLIENT_SECRET="${AZURE_SP_PASSWORD}"' >> $BASH_ENV
+            source $BASH_ENV
 
       - run: 
-        name: terraform plan
-        command:
-          |
-          terraform plan -detailed-exitcode -out=tfplan -var sql-login="${SQL_ADMIN_LOGIN}" -var sql-password="${SQL_ADMIN_PASSWORD}" -var sql-threat-email="${SQL_THREAT_EMAIL}"
-          echo $(terraform output resource_group_name) > tf-resource-group-name
-          echo $(terraform output app_name) > tf-app-name
-          echo $(terraform output app_staging_url) > tf-app-staging-url
-          echo $(terraform output db_server_name) > tf-db-server-name
+          name: terraform plan
+          command:
+            |
+            terraform plan -detailed-exitcode -out=tfplan -var sql-login="${SQL_ADMIN_LOGIN}" -var sql-password="${SQL_ADMIN_PASSWORD}" -var sql-threat-email="${SQL_THREAT_EMAIL}"
+            echo $(terraform output resource_group_name) > tf-resource-group-name
+            echo $(terraform output app_name) > tf-app-name
+            echo $(terraform output app_staging_url) > tf-app-staging-url
+            echo $(terraform output db_server_name) > tf-db-server-name
 
       - persist_to_workspace: # store the built files into the workspace for other jobs.
           root: ./
@@ -134,14 +134,14 @@ jobs:
           at: /tmp/workspace
 
       - run:
-        name: import terraform outputs
-        command: 
-          |
-          echo 'export AZURE_RG_NAME=$(cat tf-resource-group-name)' >> $BASH_ENV
-          echo 'export AZURE_APP_NAME=$(cat tf-app-name)' >> $BASH_ENV
-          echo 'export AZURE_APP_STAGING_URL=$(cat tf-app-staging-url)' >> $BASH_ENV
-          echo 'export DB_SERVER_NAME=$(cat tf-db-server-name)' >> $BASH_ENV
-          source $BASH_ENV
+          name: import terraform outputs
+          command: 
+            |
+            echo 'export AZURE_RG_NAME=$(cat tf-resource-group-name)' >> $BASH_ENV
+            echo 'export AZURE_APP_NAME=$(cat tf-app-name)' >> $BASH_ENV
+            echo 'export AZURE_APP_STAGING_URL=$(cat tf-app-staging-url)' >> $BASH_ENV
+            echo 'export DB_SERVER_NAME=$(cat tf-db-server-name)' >> $BASH_ENV
+            source $BASH_ENV
 
       - run: 
           name: Install Dependencies
@@ -154,11 +154,11 @@ jobs:
             apk add nodejs           
       
       - run:
-        name: Capture public IP
-        command:
-            |
-            exho 'export PUBLIC_IP=$(curl -s https://api.ipify.org)' >> $BASH_ENV
-            source $BASH_ENV
+          name: Capture public IP
+          command:
+              |
+              exho 'export PUBLIC_IP=$(curl -s https://api.ipify.org)' >> $BASH_ENV
+              source $BASH_ENV
 
       - run: 
           name: Azure Staging Deploy
@@ -221,7 +221,7 @@ workflows:
   build_and_deploy:
     jobs:
       - build-application
-      - terraform-plan
+      - terraform-plan:
           filters: 
             branches:
               only: main
