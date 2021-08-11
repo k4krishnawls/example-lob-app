@@ -90,7 +90,7 @@ jobs:
 
   terraform-plan:
     docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+      - image: docker.mirror.hashicorp.services/zenika/terraform-azure-cli:latest
     steps:
       - checkout
       - run:
