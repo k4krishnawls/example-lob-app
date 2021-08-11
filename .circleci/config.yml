@@ -5,7 +5,7 @@ orbs:
 
 jobs:
   build-application:
-    docker: 
+    docker:
       - image: mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
     environment:
       VERSION_NUMBER: 0.0.0.<< pipeline.number >>
@@ -17,10 +17,9 @@ jobs:
       JEST_JUNIT_TITLE: "{classname} > {title}"
     steps:
       - checkout
-      - run: 
+      - run:
           name: Install Build/System Dependencies
-          command:
-            |
+          command: |
             apt-get update -yq \
               && apt-get install curl gnupg -yq \
               && curl -sL https://deb.nodesource.com/setup_14.x | bash \
@@ -30,27 +29,24 @@ jobs:
             apt update && apt install yarn -yq
             apt install zip -yq
 
-      - run: 
+      - run:
           name: Front-end Test
-          command: 
-            |
+          command: |
             cd frontend/react-parcel-ts
             yarn install
             yarn run ci:lint --output-file ~/reports/eslint.xml
             yarn run ci:test
             ls
 
-      - run: 
+      - run:
           name: Front-end Build
-          command: 
-            |
+          command: |
             cd frontend/react-parcel-ts
             yarn run build
 
       - run:
           name: Back-end Test
-          command:
-            |
+          command: |
             cd backend
             cp ./ELA.App.Tests/appsettings.none.json ./ELA.App.Tests/appsettings.json
             dotnet test --filter "TestCategory!=Database-Tests" -l trx -l console -v m -r ~/reports/
@@ -58,8 +54,7 @@ jobs:
       - run:
           name: Back-end Test Results
           when: always
-          command:
-            |
+          command: |
             dotnet tool install -g trx2junit
             export PATH="$PATH:/root/.dotnet/tools"
             trx2junit ~/reports/*.trx
@@ -67,12 +62,11 @@ jobs:
       - store_test_results:
           path: ~/reports
       - store_artifacts:
-          path: ~/reports  
+          path: ~/reports
 
       - run:
           name: Build for Release
-          command: 
-            |
+          command: |
             cd backend
             dotnet publish ./ELA.App/ELA.App.csproj -c Release /property:Version=$VERSION_NUMBER -o ../app-publish --runtime win-x64
             dotnet publish ./ELA.Tools.DatabaseMigration/ELA.Tools.DatabaseMigration.csproj -c Release /property:Version=$VERSION_NUMBER -o ../app-migrate --self-contained -r linux-musl-x64
@@ -101,19 +95,20 @@ jobs:
       - checkout
       - run:
           name: prepare terraform env vars
-          command: 
-            |
+          command: |
             echo 'export ARM_SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"' >> $BASH_ENV
             echo 'export ARM_TENANT_ID="${AZURE_TENANT}"' >> $BASH_ENV
             echo 'export ARM_CLIENT_ID="${AZURE_SP_APPID}"' >> $BASH_ENV
             echo 'export ARM_CLIENT_SECRET="${AZURE_SP_PASSWORD}"' >> $BASH_ENV
             source $BASH_ENV
 
-      - run: 
+      - run:
           name: terraform plan
-          command:
-            |
-            terraform plan -detailed-exitcode -out=tfplan -var sql-login="${SQL_ADMIN_LOGIN}" -var sql-password="${SQL_ADMIN_PASSWORD}" -var sql-threat-email="${SQL_THREAT_EMAIL}"
+          command: |
+            cd infrastructure
+            PLAN_RESULT = $(terraform plan -detailed-exitcode -out=tfplan -var sql-login="${SQL_ADMIN_LOGIN}" -var sql-password="${SQL_ADMIN_PASSWORD}" -var sql-threat-email="${SQL_THREAT_EMAIL}")
+            echo 'PLAN RESULT=${PLAN_RESULT}'
+            cd ..
             echo $(terraform output resource_group_name) > tf-resource-group-name
             echo $(terraform output app_name) > tf-app-name
             echo $(terraform output app_staging_url) > tf-app-staging-url
@@ -135,35 +130,31 @@ jobs:
 
       - run:
           name: import terraform outputs
-          command: 
-            |
+          command: |
             echo 'export AZURE_RG_NAME=$(cat tf-resource-group-name)' >> $BASH_ENV
             echo 'export AZURE_APP_NAME=$(cat tf-app-name)' >> $BASH_ENV
             echo 'export AZURE_APP_STAGING_URL=$(cat tf-app-staging-url)' >> $BASH_ENV
             echo 'export DB_SERVER_NAME=$(cat tf-db-server-name)' >> $BASH_ENV
             source $BASH_ENV
 
-      - run: 
+      - run:
           name: Install Dependencies
-          command:
-            |
+          command: |
             # dependencies to run dotnet db migration tool
             apk add libc6-compat
             ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
             # dependencies for monitoring health checkout
-            apk add nodejs           
-      
+            apk add nodejs
+
       - run:
           name: Capture public IP
-          command:
-              |
-              exho 'export PUBLIC_IP=$(curl -s https://api.ipify.org)' >> $BASH_ENV
-              source $BASH_ENV
+          command: |
+            exho 'export PUBLIC_IP=$(curl -s https://api.ipify.org)' >> $BASH_ENV
+            source $BASH_ENV
 
-      - run: 
+      - run:
           name: Azure Staging Deploy
-          command:
-            |
+          command: |
             cd /tmp/workspace
             ls -l
             # Deploy to staging slot
@@ -176,8 +167,7 @@ jobs:
 
       - run:
           name: Database Migration
-          command: 
-            |
+          command: |
             echo "Adding firewall rule for: ${PUBLIC_IP}"
             az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT_ID}
             az sql server firewall-rule create --subscription ${AZURE_SUBSCRIPTION_ID} -s ${DB_SERVER_NAME} -g ${AZURE_RG_NAME} -n CircleCI-Job-$CIRCLE_JOB --start-ip-address $ip --end-ip-address $ip
@@ -186,17 +176,15 @@ jobs:
 
       - run:
           name: Database Migration - Firewall Cleanup
-          command: 
-            |
+          command: |
             echo "Removing firewall rule for: ${PUBLIC_IP}"
             az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT_ID}
             az sql server firewall-rule delete --subscription ${AZURE_SUBSCRIPTION_ID} -s ${DB_SERVER_NAME} -g ${AZURE_RG_NAME} -n CircleCI-Job-$CIRCLE_JOB
           when: always
 
-      - run: 
+      - run:
           name: Azure Production Swap
-          command:
-            |
+          command: |
             # Poll health endpoint, 500ms intervals, 15s timeout
             cd /tmp/workspace/tools/PollHealthcheck
             node index.js https://${AZURE_APP_STAGING_URL}/health 500 15000
@@ -222,13 +210,13 @@ workflows:
     jobs:
       - build-application
       - terraform-plan:
-          filters: 
+          filters:
             branches:
               only: main
       - deploy-application:
           requires:
             - build-application
             - terraform-plan
-          filters: 
+          filters:
             branches:
               only: main
