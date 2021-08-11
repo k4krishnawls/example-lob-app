@@ -74,7 +74,7 @@ jobs:
           command: 
             |
             cd backend
-            dotnet publish ./ELA.App/ELA.App.csproj -c Release /property:Version=$VERSION_NUMBER -o ../app-publish --self-contained --runtime win-x64
+            dotnet publish ./ELA.App/ELA.App.csproj -c Release /property:Version=$VERSION_NUMBER -o ../app-publish --runtime win-x64
             dotnet publish ./ELA.Tools.DatabaseMigration/ELA.Tools.DatabaseMigration.csproj -c Release /property:Version=$VERSION_NUMBER -o ../app-migrate --self-contained -r linux-musl-x64
             cd ../app-publish
             zip -r ../app-publish.zip *
