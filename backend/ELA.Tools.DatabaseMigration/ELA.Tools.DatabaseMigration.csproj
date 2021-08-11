@@ -28,6 +28,7 @@
   -->
   <PropertyGroup>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Message Text="### Cleaning Migration Tool ###" Importance="high" />
