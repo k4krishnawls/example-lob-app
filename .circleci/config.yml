@@ -149,10 +149,10 @@ jobs:
           name: import terraform outputs
           command: |
             cd /tmp/workspace
-            $tf-resource-group-name=$(cat tf-resource-group-name)
-            $tf-app-name=$(cat tf-app-name)
-            $tf-app-staging-url=$(cat tf-app-staging-url)
-            $tf-db-server-name=$(cat tf-db-server-name)
+            tf-resource-group-name=$(cat tf-resource-group-name)
+            tf-app-name=$(cat tf-app-name)
+            tf-app-staging-url=$(cat tf-app-staging-url)
+            tf-db-server-name=$(cat tf-db-server-name)
             echo "export AZURE_RG_NAME=$tf-resource-group-name" >> $BASH_ENV
             echo "export AZURE_APP_NAME=$tf-app-name" >> $BASH_ENV
             echo "export AZURE_APP_STAGING_URL=$tf-app-staging-url" >> $BASH_ENV
