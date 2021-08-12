@@ -182,9 +182,9 @@ jobs:
             ls -l
             # Deploy to staging slot
             az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT}
-            cat "az webapp deployment source config-zip -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --src app-publish.zip"
+            echo "az webapp deployment source config-zip -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --src app-publish.zip"
             az webapp deployment source config-zip -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --src app-publish.zip
-            cat "az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging"
+            echo "az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging"
             az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging
             # Poll health endpoint, 500ms intervals, 15s timeout
             cd /tmp/workspace/tools/PollHealthcheck

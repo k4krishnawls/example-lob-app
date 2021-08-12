@@ -11,11 +11,11 @@ output "asp_id" {
 }
 
 output "app_id" {
-  value = azurerm_app_service_plan.asp.id
+  value = azurerm_app_service.app.id
 }
 
 output "app_name" {
-  value = azurerm_app_service_plan.asp.name
+  value = azurerm_app_service.app.name
 }
 
 output "app_staging_url" {
