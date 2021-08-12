@@ -118,10 +118,6 @@ resource "azurerm_app_service" "app" {
     ftps_state = "Disabled"
     http2_enabled = true
   }
-
-  app_settings = {
-    "SOME_KEY" = "some-value"
-  }
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "app" {
@@ -143,9 +139,5 @@ resource "azurerm_app_service_slot" "app-staging" {
     dotnet_framework_version = "v5.0"
     http2_enabled = true
     websockets_enabled = false
-  }
-
-  app_settings = {
-    "SOME_KEY" = "some-value-3"
   }
 }

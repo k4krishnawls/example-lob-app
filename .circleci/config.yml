@@ -183,12 +183,18 @@ jobs:
           command: |
             cd /tmp/workspace
             ls -l
+
             # Deploy to staging slot
             az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT}
             echo "az webapp deployment source config-zip -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --src app-publish.zip"
             az webapp deployment source config-zip -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --src app-publish.zip
             echo "az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging"
             az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging
+
+            # TEMP - add/update configs - this should be handled by a config mgmt service or re-usable script tied to config mgmt
+            app_conn_string="Server=tcp:${DB_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${DB_DATABASE_NAME};Persist Security Info=False;User ID=${SQL_APP_NAME};Password=${SQL_APP_PASSWORD};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            az webapp config connection-string set -t SQLAzure -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --settings Database="${app_conn_string}"
+
             # Poll health endpoint, 500ms intervals, 15s timeout
             echo "Running healthcheck poll: https://${AZURE_APP_STAGING_URL}/health"
             cd /tmp/workspace/tools/PollHealthcheck
@@ -202,7 +208,7 @@ jobs:
             az sql server firewall-rule create --subscription ${AZURE_SUBSCRIPTION_ID} -s ${DB_SERVER_NAME} -g ${AZURE_RG_NAME} -n CircleCI-Job-$CIRCLE_JOB --start-ip-address $ip --end-ip-address $ip
             cd /tmp/workspace/app-migrate
             echo "Running migration..."
-            conn_string=Server="tcp:${DB_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${DB_DATABASE_NAME};Persist Security Info=False;User ID=${SQL_ADMIN_NAME};Password=${SQL_ADMIN_PASSWORD};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            conn_string="Server=tcp:${DB_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${DB_DATABASE_NAME};Persist Security Info=False;User ID=${SQL_ADMIN_NAME};Password=${SQL_ADMIN_PASSWORD};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
             ./ELA.Tools.DatabaseMigration --ConnectionString "${conn_string}"
 
       - run:
