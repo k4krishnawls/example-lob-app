@@ -121,9 +121,10 @@ jobs:
             fi
 
             echo $(terraform output resource_group_name) > ../tf-resource-group-name
-            echo $(terraform output app_name) > ../tf-app-name
-            echo $(terraform output app_staging_url) > ../tf-app-staging-url
-            echo $(terraform output db_server_name) > ../tf-db-server-name
+            echo $(terraform output app_name) > ../tf-app_name
+            echo $(terraform output app_staging_url) > ../tf-app_staging_url
+            echo $(terraform output db_server_name) > ../tf-db_server_name
+            echo $(terraform output db_database_name) > ../tf-db_database_name
 
       - persist_to_workspace: # store the built files into the workspace for other jobs.
           root: ./
@@ -149,14 +150,16 @@ jobs:
           name: import terraform outputs
           command: |
             cd /tmp/workspace
-            tf_resource_group_name=$(cat tf-resource-group-name)
-            tf_app_name=$(cat tf-app-name)
-            tf_app_staging_url=$(cat tf-app-staging-url)
-            tf_db_server_name=$(cat tf-db-server-name)
-            echo "export AZURE_RG_NAME=$tf_resource_group_name" >> $BASH_ENV
-            echo "export AZURE_APP_NAME=$tf_app_name" >> $BASH_ENV
-            echo "export AZURE_APP_STAGING_URL=$tf_app_staging_url" >> $BASH_ENV
-            echo "export DB_SERVER_NAME=$tf_db_server_name" >> $BASH_ENV
+            resource_group_name=$(cat tf-resource_group_name)
+            app_name=$(cat tf-app_name)
+            app_staging_url=$(cat tf-app_staging_url)
+            db_server_name=$(cat tf-db_server_name)
+            db_database_name=$(cat tf-db_database_name)
+            echo "export AZURE_RG_NAME=$resource_group_name" >> $BASH_ENV
+            echo "export AZURE_APP_NAME=$app_name" >> $BASH_ENV
+            echo "export AZURE_APP_STAGING_URL=$app_staging_url" >> $BASH_ENV
+            echo "export DB_SERVER_NAME=$db_server_name" >> $BASH_ENV
+            echo "export DB_DATABASE_NAME=$db_database_name" >> $BASH_ENV
             source $BASH_ENV
 
       - run:
@@ -187,8 +190,9 @@ jobs:
             echo "az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging"
             az webapp start -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging
             # Poll health endpoint, 500ms intervals, 15s timeout
+            echo "Running healthcheck poll: https://${AZURE_APP_STAGING_URL}/health"
             cd /tmp/workspace/tools/PollHealthcheck
-            node index.js ${AzureStagingUrl}/health 500 15000
+            node index.js https://${AZURE_APP_STAGING_URL}/health 500 15000
 
       - run:
           name: Database Migration
@@ -197,7 +201,9 @@ jobs:
             az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT}
             az sql server firewall-rule create --subscription ${AZURE_SUBSCRIPTION_ID} -s ${DB_SERVER_NAME} -g ${AZURE_RG_NAME} -n CircleCI-Job-$CIRCLE_JOB --start-ip-address $ip --end-ip-address $ip
             cd /tmp/workspace/app-migrate
-            ./ELA.Tools.DatabaseMigration --ConnectionString "${AzureDatabaseConnectionString}"
+            echo "Running migration..."
+            conn_string=Server="tcp:${DB_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${DB_DATABASE_NAME};Persist Security Info=False;User ID=${SQL_ADMIN_NAME};Password=${SQL_ADMIN_PASSWORD};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            ./ELA.Tools.DatabaseMigration --ConnectionString "${conn_string}"
 
       - run:
           name: Database Migration - Firewall Cleanup
@@ -211,13 +217,22 @@ jobs:
           name: Azure Production Swap
           command: |
             # Poll health endpoint, 500ms intervals, 15s timeout
+            echo "Running healthcheck poll: https://${AZURE_APP_STAGING_URL}/health"
             cd /tmp/workspace/tools/PollHealthcheck
             node index.js https://${AZURE_APP_STAGING_URL}/health 500 15000
             # Swap into production
+            echo "Performing swap..."
             az login --service-principal -u ${AZURE_SP_NAME} -p ${AZURE_SP_PASSWORD} --tenant ${AZURE_TENANT}
             az webapp deployment slot swap -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --target-slot production
+            echo "Swap complete."
+
+      - run:
+          name: Shutdown staging slot
+          command: |
             # Shutdown old version
+            echo "Shutting down old version..."
             az webapp stop -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging
+          when: always
 
       - discord/status:
           fail_only: true
