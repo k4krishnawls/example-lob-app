@@ -141,3 +141,9 @@ resource "azurerm_app_service_slot" "app-staging" {
     websockets_enabled = false
   }
 }
+
+resource "azurerm_app_service_slot_virtual_network_swift_connection" "app-staging" {
+  slot_name      = azurerm_app_service_slot.app-staging.name
+  app_service_id = azurerm_app_service.app.id
+  subnet_id      = azurerm_subnet.vnet.id
+}
