@@ -114,6 +114,7 @@ resource "azurerm_app_service" "app" {
 
   site_config {
     always_on = false
+    app_command_line = "dotnet ELA.App.dll"
     dotnet_framework_version = "v5.0"
     ftps_state = "Disabled"
     http2_enabled = true
@@ -136,6 +137,7 @@ resource "azurerm_app_service_slot" "app-staging" {
 
   site_config {
     always_on = false
+    app_command_line = "dotnet ELA.App.dll"
     dotnet_framework_version = "v5.0"
     http2_enabled = true
     websockets_enabled = false
