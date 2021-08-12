@@ -120,7 +120,7 @@ jobs:
               exit 1
             fi
 
-            echo $(terraform output resource_group_name) > ../tf-resource-group-name
+            echo $(terraform output resource_group_name) > ../tf-resource_group_name
             echo $(terraform output app_name) > ../tf-app_name
             echo $(terraform output app_staging_url) > ../tf-app_staging_url
             echo $(terraform output db_server_name) > ../tf-db_server_name
