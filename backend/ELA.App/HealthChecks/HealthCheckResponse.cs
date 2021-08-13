@@ -3,6 +3,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -20,7 +21,8 @@ namespace ELA.App.HealthChecks
                 WriteIndented = true,
                 Converters = { 
                     new JsonStringEnumConverter()
-                }
+                },
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
             httpContext.Response.ContentType = "application/json";
             return httpContext.Response.WriteAsync(json);
@@ -31,11 +33,13 @@ namespace ELA.App.HealthChecks
 
             public PrettierHealthCheckResponse(HealthReport result)
             {
+                Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
                 Status = result.Status;
                 DurationTotalMilliseconds = result.TotalDuration.TotalMilliseconds;
                 Entries = result.Entries.Select(e => new PrettierHealthEvent(e)).ToList();
             }
 
+            public string Version { get; }
             public HealthStatus Status { get; }
             public double DurationTotalMilliseconds { get; }
             public object Entries { get; }
