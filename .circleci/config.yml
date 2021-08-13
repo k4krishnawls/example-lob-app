@@ -196,11 +196,10 @@ jobs:
             app_conn_string="Server=tcp:${DB_SERVER_NAME}.database.windows.net,1433;Initial Catalog=${DB_DATABASE_NAME};Persist Security Info=False;User ID=${SQL_APP_NAME};Password=${SQL_APP_PASSWORD};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
             az webapp config connection-string set -t SQLAzure -g ${AZURE_RG_NAME} -n ${AZURE_APP_NAME} -s staging --settings Database="${app_conn_string}"
 
-            # Disabled for first deploy because nothing exists in the DB yet, so the healthcheck will fail before running initial migration
-            # # Poll health endpoint, 500ms intervals, 15s timeout
-            # echo "Running healthcheck poll: https://${AZURE_APP_STAGING_URL}/health"
-            # cd /tmp/workspace/tools/PollHealthcheck
-            # node index.js https://${AZURE_APP_STAGING_URL}/health 500 15000
+            # Poll health endpoint, 500ms intervals, 15s timeout
+            echo "Running healthcheck poll: https://${AZURE_APP_STAGING_URL}/health"
+            cd /tmp/workspace/tools/PollHealthcheck
+            node index.js https://${AZURE_APP_STAGING_URL}/health 500 15000
 
       - run:
           name: Database Migration
