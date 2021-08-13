@@ -105,7 +105,7 @@ jobs:
       - run:
           name: terraform plan
           command: |
-            set -x
+            set -xo
 
             cd infrastructure
             terraform init
