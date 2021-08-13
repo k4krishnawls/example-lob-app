@@ -115,7 +115,6 @@ resource "azurerm_app_service" "app" {
   site_config {
     always_on = false
     dotnet_framework_version = "v5.0"
-    ftps_state = "Disabled"
     http2_enabled = true
   }
 }
