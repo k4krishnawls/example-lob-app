@@ -113,7 +113,8 @@ jobs:
 
             echo "Checking status to continue..."
             terraform show tfplan | grep "Your infrastructure matches the configuration" || true
-            if terraform show tfplan | grep -q "Your infrastructure matches the configuration"; then 
+            count=$(terraform show tfplan | grep -c "Your infrastructure matches the configuration")
+            if [$count -gt 0]; then 
               echo "No changes, infrastructure is up to date";
             else 
               echo "******************************************************************"
