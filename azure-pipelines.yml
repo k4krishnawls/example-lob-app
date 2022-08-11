@@ -36,4 +36,4 @@ steps:
   inputs:
     SourceFolder: '/'
     Contents: '**'
-    TargetFolder: 
+    TargetFolder: '$(build.artifactstagingdirectory)'
