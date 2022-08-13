@@ -44,6 +44,7 @@ steps:
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
+    azureSubscription: 'Pay-As-You-Go (276fb5aa-8f3b-4ca4-a242-a8522d014510)'
     appType: 'webApp'
-    WebAppName: 
+    WebAppName: 'webapp13082022'
     packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
