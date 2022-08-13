@@ -35,10 +35,10 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    contents: '**'
+    contents: '*.zip'
     targetFolder: $(Build.ArtifactStagingDirectory)
 - task: PublishBuildArtifacts@1
-  inputs:
+  inputs: 
     pathToPublish: $(Build.ArtifactStagingDirectory)
     artifactName: MyBuildOutputs
 - task: AzureRmWebAppDeployment@4
